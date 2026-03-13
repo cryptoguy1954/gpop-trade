@@ -1,0 +1,11 @@
+[build]
+  base = "gpop-trade"
+  publish = "gpop-trade"
+  functions = "gpop-trade/netlify/functions"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"

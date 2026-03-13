@@ -1,0 +1,2927 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>G-Pop Trade — Soloway Method Journal</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0b0e;
+    --bg2: #111318;
+    --bg3: #181b22;
+    --border: #1e2330;
+    --border2: #252d3d;
+    --accent: #00d4ff;
+    --accent2: #0099cc;
+    --green: #00e676;
+    --red: #ff4757;
+    --yellow: #ffd32a;
+    --orange: #ff6b35;
+    --text: #e8eaf0;
+    --text2: #8892a4;
+    --text3: #4a5568;
+    --mono: 'Space Mono', monospace;
+    --display: 'Bebas Neue', cursive;
+    --body: 'DM Sans', sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--body);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* GRID BACKGROUND */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* HEADER */
+  .header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(10,11,14,0.95);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 56px;
+  }
+
+  .logo {
+    font-family: var(--display);
+    font-size: 28px;
+    letter-spacing: 3px;
+    color: var(--accent);
+    text-shadow: 0 0 20px rgba(0,212,255,0.4);
+  }
+
+  .logo span { color: var(--text2); font-size: 12px; font-family: var(--mono); display: block; letter-spacing: 2px; line-height: 1; margin-top: -4px; }
+
+  .header-right { display: flex; gap: 8px; align-items: center; }
+
+  .market-pill {
+    font-family: var(--mono);
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 4px;
+    border: 1px solid var(--border2);
+    background: var(--bg2);
+  }
+
+  .market-pill.bearish { border-color: rgba(255,71,87,0.4); color: var(--red); }
+  .market-pill.bullish { border-color: rgba(0,230,118,0.4); color: var(--green); }
+  .market-pill.neutral { border-color: rgba(255,211,42,0.4); color: var(--yellow); }
+
+  /* NAV */
+  .nav {
+    display: flex;
+    gap: 2px;
+    padding: 12px 24px 0;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+    z-index: 1;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .nav::-webkit-scrollbar { display: none; }
+
+  .nav-tab {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 10px 20px;
+    cursor: pointer;
+    border: 1px solid transparent;
+    border-bottom: none;
+    border-radius: 6px 6px 0 0;
+    color: var(--text2);
+    background: transparent;
+    transition: all 0.2s;
+    position: relative;
+  }
+
+  .nav-tab:hover { color: var(--text); background: var(--bg2); }
+
+  .nav-tab.active {
+    color: var(--accent);
+    background: var(--bg2);
+    border-color: var(--border2);
+    border-bottom-color: var(--bg2);
+    margin-bottom: -1px;
+  }
+
+  .nav-tab .badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--accent);
+    color: var(--bg);
+    font-size: 9px;
+    font-weight: 700;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    margin-left: 6px;
+    vertical-align: middle;
+  }
+
+  /* MAIN */
+  .main {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 24px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  /* CARDS */
+  .card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .card-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .card-title {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text2);
+  }
+
+  .card-body { padding: 20px; }
+
+  /* BUTTONS */
+  .btn {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    border: 1px solid var(--border2);
+    background: var(--bg3);
+    color: var(--text);
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  .btn-primary {
+    background: var(--accent);
+    color: var(--bg);
+    border-color: var(--accent);
+    font-weight: 700;
+  }
+
+  .btn-primary:hover { background: var(--accent2); border-color: var(--accent2); color: var(--bg); }
+
+  .btn-sm { padding: 5px 10px; font-size: 10px; }
+
+  .btn-danger { border-color: rgba(255,71,87,0.4); color: var(--red); }
+  .btn-danger:hover { background: rgba(255,71,87,0.1); border-color: var(--red); }
+
+  .btn-success { border-color: rgba(0,230,118,0.4); color: var(--green); }
+  .btn-success:hover { background: rgba(0,230,118,0.1); border-color: var(--green); }
+
+  /* FORMS */
+  .form-group { margin-bottom: 16px; }
+  .form-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--text2);
+    display: block;
+    margin-bottom: 6px;
+  }
+
+  .form-input, .form-select, .form-textarea {
+    width: 100%;
+    background: var(--bg3);
+    border: 1px solid var(--border2);
+    border-radius: 4px;
+    color: var(--text);
+    font-family: var(--body);
+    font-size: 14px;
+    padding: 8px 12px;
+    transition: border-color 0.2s;
+    outline: none;
+  }
+
+  .form-input:focus, .form-select:focus, .form-textarea:focus {
+    border-color: var(--accent);
+  }
+
+  .form-textarea { resize: vertical; min-height: 80px; line-height: 1.5; }
+  .form-select option { background: var(--bg3); }
+
+  .form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; }
+
+  /* GAME PLAN TAB */
+  .gameplan-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+
+  @media (max-width: 900px) { .gameplan-grid { grid-template-columns: 1fr; } }
+
+  .macro-bias-display {
+    text-align: center;
+    padding: 24px;
+  }
+
+  .bias-label {
+    font-family: var(--display);
+    font-size: 64px;
+    letter-spacing: 4px;
+    line-height: 1;
+  }
+
+  .bias-label.bearish { color: var(--red); text-shadow: 0 0 30px rgba(255,71,87,0.4); }
+  .bias-label.bullish { color: var(--green); text-shadow: 0 0 30px rgba(0,230,118,0.4); }
+  .bias-label.neutral { color: var(--yellow); text-shadow: 0 0 30px rgba(255,211,42,0.4); }
+
+  .key-levels-list { list-style: none; }
+  .key-level-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+  }
+  .key-level-item:last-child { border-bottom: none; }
+  .level-ticker {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--accent);
+    min-width: 50px;
+  }
+  .level-price {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--yellow);
+    min-width: 70px;
+  }
+  .level-note { color: var(--text2); font-size: 12px; flex: 1; }
+  .level-type {
+    font-family: var(--mono);
+    font-size: 9px;
+    padding: 2px 6px;
+    border-radius: 3px;
+    text-transform: uppercase;
+  }
+  .level-type.support { background: rgba(0,230,118,0.15); color: var(--green); }
+  .level-type.resistance { background: rgba(255,71,87,0.15); color: var(--red); }
+  .level-type.target { background: rgba(0,212,255,0.15); color: var(--accent); }
+  .level-type.watch { background: rgba(255,211,42,0.15); color: var(--yellow); }
+
+  .ai-summary-box {
+    background: var(--bg3);
+    border: 1px solid var(--border2);
+    border-left: 3px solid var(--accent);
+    border-radius: 4px;
+    padding: 16px;
+    font-size: 13px;
+    line-height: 1.7;
+    color: var(--text);
+    white-space: pre-wrap;
+  }
+
+  .ai-loading {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--text2);
+    font-family: var(--mono);
+    font-size: 12px;
+  }
+
+  .spinner {
+    width: 16px; height: 16px;
+    border: 2px solid var(--border2);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .gameplan-input-area { margin-bottom: 16px; }
+
+  /* WATCHLIST TAB */
+  .watchlist-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 16px;
+  }
+
+  .watch-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    transition: border-color 0.2s, transform 0.2s;
+    position: relative;
+  }
+
+  .watch-card:hover { border-color: var(--border2); transform: translateY(-1px); }
+
+  .watch-card-header {
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .watch-ticker {
+    font-family: var(--display);
+    font-size: 28px;
+    letter-spacing: 2px;
+    color: var(--text);
+  }
+
+  .watch-status {
+    font-family: var(--mono);
+    font-size: 9px;
+    padding: 3px 8px;
+    border-radius: 3px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .status-watching { background: rgba(255,211,42,0.15); color: var(--yellow); border: 1px solid rgba(255,211,42,0.3); }
+  .status-forming { background: rgba(0,212,255,0.15); color: var(--accent); border: 1px solid rgba(0,212,255,0.3); }
+  .status-confirmed { background: rgba(0,230,118,0.15); color: var(--green); border: 1px solid rgba(0,230,118,0.3); }
+  .status-active { background: rgba(255,107,53,0.15); color: var(--orange); border: 1px solid rgba(255,107,53,0.3); }
+  .status-closed { background: rgba(74,85,104,0.3); color: var(--text3); border: 1px solid var(--border); }
+  .status-pass { background: rgba(255,71,87,0.15); color: var(--red); border: 1px solid rgba(255,71,87,0.3); }
+
+  .watch-card-body { padding: 14px 16px; }
+
+  .watch-levels {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+
+  .level-box {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 6px 8px;
+    text-align: center;
+  }
+
+  .level-box-label {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .level-box-value {
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 700;
+    margin-top: 2px;
+  }
+
+  .level-box.entry .level-box-value { color: var(--accent); }
+  .level-box.stop .level-box-value { color: var(--red); }
+  .level-box.target .level-box-value { color: var(--green); }
+
+  .watch-prob {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+
+  .prob-bar {
+    flex: 1;
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .prob-fill {
+    height: 100%;
+    border-radius: 2px;
+    background: var(--accent);
+    transition: width 0.5s ease;
+  }
+
+  .prob-fill.high { background: var(--green); }
+  .prob-fill.med { background: var(--yellow); }
+  .prob-fill.low { background: var(--red); }
+
+  .prob-text {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text2);
+    min-width: 35px;
+    text-align: right;
+  }
+
+  .watch-notes {
+    font-size: 12px;
+    color: var(--text2);
+    line-height: 1.5;
+    margin-bottom: 10px;
+    border-top: 1px solid var(--border);
+    padding-top: 10px;
+  }
+
+  .watch-catalyst {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--orange);
+    margin-bottom: 10px;
+  }
+
+  .watch-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+
+  .watch-date {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--text3);
+    margin-top: 8px;
+  }
+
+  /* CHART LOG TAB */
+  .chart-log-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+
+  .chart-log-table th {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--text3);
+    padding: 10px 12px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg3);
+  }
+
+  .chart-log-table td {
+    padding: 12px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+
+  .chart-log-table tr:hover td { background: rgba(255,255,255,0.02); }
+
+  .chart-log-table .ticker-cell {
+    font-family: var(--display);
+    font-size: 20px;
+    letter-spacing: 1px;
+    color: var(--text);
+  }
+
+  .pattern-tag {
+    font-family: var(--mono);
+    font-size: 9px;
+    padding: 2px 6px;
+    border-radius: 3px;
+    background: rgba(0,212,255,0.1);
+    color: var(--accent);
+    border: 1px solid rgba(0,212,255,0.2);
+    display: inline-block;
+    margin: 2px;
+  }
+
+  /* TRADE JOURNAL TAB */
+  .trade-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  @media (max-width: 700px) { .trade-stats { grid-template-columns: repeat(2, 1fr); } }
+
+  .stat-box {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
+    text-align: center;
+  }
+
+  .stat-value {
+    font-family: var(--display);
+    font-size: 36px;
+    letter-spacing: 2px;
+    line-height: 1;
+  }
+
+  .stat-value.positive { color: var(--green); }
+  .stat-value.negative { color: var(--red); }
+  .stat-value.neutral { color: var(--accent); }
+
+  .stat-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 1px;
+    color: var(--text3);
+    text-transform: uppercase;
+    margin-top: 4px;
+  }
+
+  .trade-row {
+    display: grid;
+    grid-template-columns: 80px 100px 100px 100px 100px 80px 1fr auto;
+    gap: 12px;
+    align-items: center;
+    padding: 12px;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+  }
+
+  .trade-row:hover { background: rgba(255,255,255,0.02); }
+
+  .trade-ticker {
+    font-family: var(--display);
+    font-size: 20px;
+    letter-spacing: 1px;
+  }
+
+  .pnl-positive { color: var(--green); font-family: var(--mono); font-size: 12px; font-weight: 700; }
+  .pnl-negative { color: var(--red); font-family: var(--mono); font-size: 12px; font-weight: 700; }
+  .pnl-neutral { color: var(--text2); font-family: var(--mono); font-size: 12px; }
+
+  /* MODAL */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.8);
+    backdrop-filter: blur(4px);
+    z-index: 1000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  .modal-overlay.open { display: flex; }
+
+  .modal {
+    background: var(--bg2);
+    border: 1px solid var(--border2);
+    border-radius: 10px;
+    width: 100%;
+    max-width: 600px;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+
+  .modal-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .modal-title {
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  .modal-close {
+    background: none;
+    border: none;
+    color: var(--text2);
+    cursor: pointer;
+    font-size: 20px;
+    line-height: 1;
+    padding: 0;
+    transition: color 0.2s;
+  }
+  .modal-close:hover { color: var(--text); }
+
+  .modal-body { padding: 20px; }
+  .modal-footer {
+    padding: 16px 20px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+  }
+
+  /* EMPTY STATE */
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text3);
+  }
+
+  .empty-state-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+    opacity: 0.3;
+  }
+
+  .empty-state h3 {
+    font-family: var(--mono);
+    font-size: 13px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    color: var(--text2);
+  }
+
+  .empty-state p { font-size: 13px; line-height: 1.6; }
+
+  /* TAGS */
+  .tag-input-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    background: var(--bg3);
+    border: 1px solid var(--border2);
+    border-radius: 4px;
+    padding: 6px 8px;
+    min-height: 38px;
+    cursor: text;
+  }
+
+  .tag {
+    background: rgba(0,212,255,0.15);
+    color: var(--accent);
+    border: 1px solid rgba(0,212,255,0.3);
+    border-radius: 3px;
+    font-family: var(--mono);
+    font-size: 10px;
+    padding: 2px 6px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .tag-remove {
+    cursor: pointer;
+    opacity: 0.6;
+    transition: opacity 0.2s;
+  }
+  .tag-remove:hover { opacity: 1; }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--text3); }
+
+  /* TOOLTIP */
+  [data-tip] { position: relative; }
+  [data-tip]::after {
+    content: attr(data-tip);
+    position: absolute;
+    bottom: calc(100% + 6px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--bg3);
+    border: 1px solid var(--border2);
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 10px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+    z-index: 10;
+  }
+  [data-tip]:hover::after { opacity: 1; }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+
+  .section-title {
+    font-family: var(--display);
+    font-size: 32px;
+    letter-spacing: 3px;
+    color: var(--text);
+  }
+
+  .divider {
+    height: 1px;
+    background: linear-gradient(90deg, var(--border2), transparent);
+    margin: 20px 0;
+  }
+
+  .inline-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text3);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .confirmations-checklist { list-style: none; }
+  .confirmation-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 0;
+    font-size: 13px;
+    color: var(--text2);
+  }
+  .confirmation-item input[type="checkbox"] { accent-color: var(--accent); width: 14px; height: 14px; }
+  .confirmation-item.checked { color: var(--green); }
+
+  .positions-table-header {
+    display: grid;
+    grid-template-columns: 80px 100px 100px 100px 100px 80px 1fr 80px;
+    gap: 12px;
+    padding: 8px 12px;
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--text3);
+    border-bottom: 1px solid var(--border);
+    background: var(--bg3);
+  }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div>
+    <div class="logo">G-Pop Trade<span>// Soloway Method</span></div>
+  </div>
+  <div class="header-right">
+    <div class="market-pill" id="headerBias">— BIAS</div>
+    <div class="market-pill neutral" id="headerDate">—</div>
+    <button onclick="copyConversationStarter()" style="
+      background: linear-gradient(135deg, #ffd32a, #ff9500);
+      color: #0a0b0e;
+      border: none;
+      border-radius: 6px;
+      padding: 10px 20px;
+      font-family: var(--mono);
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      box-shadow: 0 0 16px rgba(255,211,42,0.35);
+      transition: all 0.2s;
+    " onmouseover="this.style.boxShadow='0 0 28px rgba(255,211,42,0.6)'" onmouseout="this.style.boxShadow='0 0 16px rgba(255,211,42,0.35)'" title="Copy full methodology context to paste into a new Claude chat">
+      📋 Copy Session Starter
+    </button>
+    <button onclick="toggleMethodologyDrawer()" style="
+      background: var(--bg2);
+      color: var(--yellow);
+      border: 1px solid rgba(255,211,42,0.4);
+      border-radius: 6px;
+      padding: 10px 18px;
+      font-family: var(--mono);
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    " onmouseover="this.style.borderColor='var(--yellow)'" onmouseout="this.style.borderColor='rgba(255,211,42,0.4)'" id="methodologyBtn">
+      📖 Rules
+    </button>
+  </div>
+</header>
+
+<nav class="nav">
+  <div class="nav-tab active" onclick="switchTab('gameplan')">📋 Game Plan</div>
+  <div class="nav-tab" onclick="switchTab('ttc')">📈 Trading the Close</div>
+  <div class="nav-tab" onclick="switchTab('combined')">⚡ Intelligence</div>
+  <div class="nav-tab" onclick="switchTab('charts')">🖥 Charts</div>
+  <div class="nav-tab" onclick="switchTab('watchlist')">👁 Watchlist <span class="badge" id="watchBadge">0</span></div>
+  <div class="nav-tab" onclick="switchTab('chartlog')">📊 Chart Log <span class="badge" id="logBadge">0</span></div>
+  <div class="nav-tab" onclick="switchTab('journal')">💼 Trade Journal</div>
+</nav>
+
+<!-- ═══════════════════ METHODOLOGY DRAWER ═══════════════════ -->
+<div id="methodologyDrawer" style="
+  position: fixed;
+  top: 0; right: -680px;
+  width: 660px;
+  height: 100vh;
+  background: var(--bg2);
+  border-left: 1px solid var(--border2);
+  z-index: 500;
+  overflow-y: auto;
+  transition: right 0.35s cubic-bezier(0.4,0,0.2,1);
+  box-shadow: -8px 0 40px rgba(0,0,0,0.5);
+">
+  <div style="position:sticky;top:0;background:var(--bg2);border-bottom:1px solid var(--border);padding:16px 20px;display:flex;align-items:center;justify-content:space-between;z-index:10">
+    <div>
+      <div style="font-family:var(--display);font-size:28px;letter-spacing:3px;color:var(--yellow)">METHODOLOGY</div>
+      <div style="font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:1px">Gareth Soloway / VerifiedInvesting.com</div>
+    </div>
+    <button onclick="toggleMethodologyDrawer()" style="background:none;border:none;color:var(--text2);font-size:24px;cursor:pointer;padding:4px 8px;line-height:1">×</button>
+  </div>
+
+  <div style="padding:20px">
+
+    <!-- CONFIRMATION SIGNAL VISUAL -->
+    <div style="margin-bottom:20px">
+      <div style="font-family:var(--mono);font-size:10px;color:var(--accent);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px">// THE 2-CANDLE CONFIRMATION RULE</div>
+      <div style="background:var(--bg3);border:1px solid var(--border2);border-radius:8px;padding:16px">
+
+        <!-- Candle diagram -->
+        <div style="display:flex;gap:16px;align-items:flex-end;justify-content:center;margin-bottom:16px;height:140px;position:relative">
+
+          <!-- Resistance line -->
+          <div style="position:absolute;left:0;right:0;top:30px;border-top:2px dashed rgba(255,71,87,0.6);z-index:1">
+            <span style="position:absolute;right:4px;top:-18px;font-family:var(--mono);font-size:9px;color:var(--red);text-transform:uppercase">Resistance</span>
+          </div>
+
+          <!-- Candle 1 - below resistance -->
+          <div style="display:flex;flex-direction:column;align-items:center;gap:2px;z-index:2">
+            <div style="width:2px;height:16px;background:var(--text3)"></div>
+            <div style="width:20px;height:50px;background:var(--red);border-radius:2px"></div>
+            <div style="width:2px;height:10px;background:var(--text3)"></div>
+            <div style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-top:4px">Day 1</div>
+          </div>
+
+          <!-- Candle 2 - pokes above, closes below = FAKEOUT -->
+          <div style="display:flex;flex-direction:column;align-items:center;gap:2px;z-index:2">
+            <div style="width:2px;height:28px;background:var(--text3)"></div>
+            <div style="width:20px;height:44px;background:var(--red);border-radius:2px"></div>
+            <div style="width:2px;height:8px;background:var(--text3)"></div>
+            <div style="font-family:var(--mono);font-size:9px;color:var(--red);margin-top:4px;text-align:center">Poke<br>above</div>
+            <div style="font-family:var(--mono);font-size:8px;color:var(--red);background:rgba(255,71,87,0.15);padding:2px 5px;border-radius:3px;border:1px solid rgba(255,71,87,0.3)">FAKEOUT</div>
+          </div>
+
+          <!-- Gap -->
+          <div style="width:12px"></div>
+
+          <!-- Candle 3 - closes above = 1st confirmation -->
+          <div style="display:flex;flex-direction:column;align-items:center;gap:2px;z-index:2">
+            <div style="width:2px;height:8px;background:var(--text3)"></div>
+            <div style="width:20px;height:52px;background:var(--green);border-radius:2px;margin-top:-22px"></div>
+            <div style="width:2px;height:10px;background:var(--text3)"></div>
+            <div style="font-family:var(--mono);font-size:9px;color:var(--yellow);margin-top:4px;text-align:center">Close<br>above</div>
+            <div style="font-family:var(--mono);font-size:8px;color:var(--yellow);background:rgba(255,211,42,0.15);padding:2px 5px;border-radius:3px;border:1px solid rgba(255,211,42,0.3)">CANDLE 1</div>
+          </div>
+
+          <!-- Candle 4 - closes higher = CONFIRMED -->
+          <div style="display:flex;flex-direction:column;align-items:center;gap:2px;z-index:2">
+            <div style="width:2px;height:6px;background:var(--text3)"></div>
+            <div style="width:20px;height:48px;background:var(--green);border-radius:2px;margin-top:-28px"></div>
+            <div style="width:2px;height:8px;background:var(--text3)"></div>
+            <div style="font-family:var(--mono);font-size:9px;color:var(--green);margin-top:4px;text-align:center">Higher<br>close</div>
+            <div style="font-family:var(--mono);font-size:8px;color:var(--green);background:rgba(0,230,118,0.15);padding:2px 5px;border-radius:3px;border:1px solid rgba(0,230,118,0.3)">CONFIRMED ✓</div>
+          </div>
+
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px">
+          <div style="background:rgba(255,71,87,0.08);border:1px solid rgba(255,71,87,0.2);border-radius:6px;padding:10px">
+            <div style="font-family:var(--mono);font-size:9px;color:var(--red);text-transform:uppercase;letter-spacing:1px;margin-bottom:5px">✗ Do NOT Enter</div>
+            <div style="font-size:11px;color:var(--text2);line-height:1.5">Price pokes above resistance but closes back below. This is a fakeout — traps buyers. Wait.</div>
+          </div>
+          <div style="background:rgba(0,230,118,0.08);border:1px solid rgba(0,230,118,0.2);border-radius:6px;padding:10px">
+            <div style="font-family:var(--mono);font-size:9px;color:var(--green);text-transform:uppercase;letter-spacing:1px;margin-bottom:5px">✓ Entry Signal</div>
+            <div style="font-size:11px;color:var(--text2);line-height:1.5">2 consecutive closes above resistance, each higher than the last. Now confirmed — enter on open of candle 3 or at pullback.</div>
+          </div>
+        </div>
+        <div style="margin-top:10px;padding:8px 12px;background:rgba(255,211,42,0.05);border-left:2px solid var(--yellow);border-radius:0 4px 4px 0;font-size:11px;color:var(--text2)">
+          <strong style="color:var(--yellow)">Key:</strong> Applies to ALL timeframes — daily candles for swing trades, 1-min candles for day trades. The same rule, always.
+        </div>
+      </div>
+    </div>
+
+    <!-- CORE RULES -->
+    <div style="margin-bottom:20px">
+      <div style="font-family:var(--mono);font-size:10px;color:var(--accent);letter-spacing:2px;text-transform:uppercase;margin-bottom:10px">// CORE RULES</div>
+      <div id="drawerCoreRules"></div>
+    </div>
+
+    <!-- SCREENER -->
+    <div style="margin-bottom:20px">
+      <div style="font-family:var(--mono);font-size:10px;color:var(--green);letter-spacing:2px;text-transform:uppercase;margin-bottom:10px">// SCREENER FILTERS</div>
+      <div id="drawerScreener"></div>
+    </div>
+
+    <!-- POSITION SIZING -->
+    <div style="margin-bottom:20px">
+      <div style="font-family:var(--mono);font-size:10px;color:var(--red);letter-spacing:2px;text-transform:uppercase;margin-bottom:10px">// POSITION SIZING</div>
+      <div id="drawerPositionSizing"></div>
+    </div>
+
+    <!-- PATTERNS -->
+    <div style="margin-bottom:20px">
+      <div style="font-family:var(--mono);font-size:10px;color:var(--orange);letter-spacing:2px;text-transform:uppercase;margin-bottom:10px">// PATTERN LIBRARY</div>
+      <div id="drawerPatterns"></div>
+    </div>
+
+    <!-- CUSTOM NOTES -->
+    <div style="margin-bottom:20px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <div style="font-family:var(--mono);font-size:10px;color:var(--yellow);letter-spacing:2px;text-transform:uppercase">// MY NOTES</div>
+        <button class="btn btn-sm btn-primary" onclick="openModal('addRuleModal')">＋ Add Note</button>
+      </div>
+      <div id="drawerCustomNotes"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Drawer backdrop -->
+<div id="methodologyBackdrop" onclick="toggleMethodologyDrawer()" style="position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:499;display:none;backdrop-filter:blur(2px)"></div>
+
+
+<main class="main">
+
+  <!-- ═══════════════════ GAME PLAN TAB ═══════════════════ -->
+  <div class="tab-content active" id="tab-gameplan">
+    <div class="section-header">
+      <div class="section-title">DAILY GAME PLAN</div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-primary" onclick="openModal('gamePlanModal')">＋ New Game Plan</button>
+      </div>
+    </div>
+
+    <div id="gamePlanDisplay">
+      <div class="empty-state">
+        <div class="empty-state-icon">📋</div>
+        <h3>No Game Plan Yet</h3>
+        <p>Paste Gareth's daily "My Trading Game Plan" article<br>and Claude will extract the key insights automatically.</p>
+        <br>
+        <button class="btn btn-primary" onclick="openModal('gamePlanModal')">＋ Add Today's Game Plan</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════ TRADING THE CLOSE TAB ═══════════════════ -->
+  <div class="tab-content" id="tab-ttc">
+    <div class="section-header">
+      <div class="section-title">TRADING THE CLOSE</div>
+      <button class="btn btn-primary" onclick="openModal('ttcModal')">＋ Add Today's Show</button>
+    </div>
+    <div id="ttcDisplay">
+      <div class="empty-state">
+        <div class="empty-state-icon">📈</div>
+        <h3>No Show Notes Yet</h3>
+        <p>Paste the Trading the Close show notes or article<br>and Claude will extract setups and key levels automatically.</p>
+        <br>
+        <button class="btn btn-primary" onclick="openModal('ttcModal')">＋ Add Today's Show</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════ COMBINED INTELLIGENCE TAB ═══════════════════ -->
+  <div class="tab-content" id="tab-combined">
+    <div class="section-header">
+      <div class="section-title">COMBINED INTELLIGENCE</div>
+      <button class="btn btn-primary" onclick="generateCombinedIntelligence()">⚡ Generate Analysis</button>
+    </div>
+    <div id="combinedDisplay">
+      <div class="empty-state">
+        <div class="empty-state-icon">⚡</div>
+        <h3>Add Both Shows First</h3>
+        <p>Once you've added both Gareth's Game Plan and Trading the Close,<br>click Generate Analysis to see where they agree, conflict, and combined signals.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════ CHARTS TAB ═══════════════════ -->
+  <div class="tab-content" id="tab-charts">
+    <div class="section-header">
+      <div class="section-title">LIVE CHARTS</div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <input type="text" id="chartTickerInput" class="form-input" placeholder="Enter ticker..." style="width:140px;text-transform:uppercase" onkeydown="if(event.key==='Enter')loadChart()">
+        <select id="chartInterval" class="form-select" style="width:100px">
+          <option value="D">Daily</option>
+          <option value="W">Weekly</option>
+          <option value="M">Monthly</option>
+          <option value="60">1 Hour</option>
+          <option value="15">15 Min</option>
+          <option value="10">10 Min</option>
+          <option value="5">5 Min</option>
+        </select>
+        <button class="btn btn-primary" onclick="loadChart()">Load Chart</button>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;" id="quickTickers">
+    </div>
+
+    <div class="card" style="overflow:hidden">
+      <div id="chartContainer" style="height:600px;background:var(--bg3);display:flex;align-items:center;justify-content:center;">
+        <div class="empty-state" style="padding:40px">
+          <div class="empty-state-icon">🖥</div>
+          <h3>No Chart Loaded</h3>
+          <p>Enter a ticker above or click a watchlist item<br>to load a live TradingView chart.</p>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:16px;display:grid;grid-template-columns:1fr 1fr;gap:16px;" id="chartNotesSidebar">
+    </div>
+  </div>
+
+  <!-- ═══════════════════ WATCHLIST TAB ═══════════════════ -->
+  <div class="tab-content" id="tab-watchlist">
+    <div class="section-header">
+      <div class="section-title">WATCHLIST</div>
+      <button class="btn btn-primary" onclick="openModal('watchModal')">＋ Add to Watchlist</button>
+    </div>
+
+    <div class="watchlist-grid" id="watchlistGrid">
+      <div class="empty-state" style="grid-column:1/-1">
+        <div class="empty-state-icon">👁</div>
+        <h3>Watchlist Empty</h3>
+        <p>Add tickers from your screener to track setups,<br>key levels, and catalyst dates.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════ CHART LOG TAB ═══════════════════ -->
+  <div class="tab-content" id="tab-chartlog">
+    <div class="section-header">
+      <div class="section-title">CHART ANALYSIS LOG</div>
+      <button class="btn btn-primary" onclick="openModal('chartModal')">＋ Log Analysis</button>
+    </div>
+
+    <div class="card">
+      <div id="chartLogBody">
+        <div class="empty-state">
+          <div class="empty-state-icon">📊</div>
+          <h3>No Charts Logged</h3>
+          <p>Log your chart analyses with patterns, probability ratings,<br>and notes to build your trading record.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════ TRADE JOURNAL TAB ═══════════════════ -->
+  <div class="tab-content" id="tab-journal">
+    <div class="trade-stats" id="tradeStats">
+      <div class="stat-box">
+        <div class="stat-value neutral" id="statTotal">0</div>
+        <div class="stat-label">Total Trades</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-value positive" id="statWins">0%</div>
+        <div class="stat-label">Win Rate</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-value neutral" id="statPnl">$0</div>
+        <div class="stat-label">Total P&L</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-value neutral" id="statAvgProb">—</div>
+        <div class="stat-label">Avg Probability</div>
+      </div>
+    </div>
+
+    <div class="section-header">
+      <div class="section-title">TRADE HISTORY</div>
+      <button class="btn btn-primary" onclick="openModal('tradeModal')">＋ Log Trade</button>
+    </div>
+
+    <div class="card">
+      <div class="positions-table-header">
+        <div>Ticker</div><div>Entry</div><div>Exit</div><div>Size</div><div>P&L</div><div>Prob%</div><div>Notes</div><div>Date</div>
+      </div>
+      <div id="tradeLogBody">
+        <div class="empty-state">
+          <div class="empty-state-icon">💼</div>
+          <h3>No Trades Logged</h3>
+          <p>Log completed trades to track your performance<br>and win rate over time.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<!-- ═══════════════════ MODALS ═══════════════════ -->
+
+<!-- ADD/EDIT RULE MODAL -->
+<div class="modal-overlay" id="addRuleModal">
+  <div class="modal" style="max-width:560px">
+    <div class="modal-header">
+      <div class="modal-title">// Add Custom Note / Observation</div>
+      <button class="modal-close" onclick="closeModal('addRuleModal')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Category</label>
+        <select class="form-select" id="ruleCategory">
+          <option value="observation">Personal Observation</option>
+          <option value="rule">New Rule Learned</option>
+          <option value="mistake">Mistake to Avoid</option>
+          <option value="gareth">Gareth Quote / Lesson</option>
+          <option value="drew">Drew Quote / Lesson</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Title</label>
+        <input type="text" class="form-input" id="ruleTitle" placeholder="e.g. BTC bear flag measured move">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Detail</label>
+        <textarea class="form-textarea" id="ruleDetail" style="min-height:100px" placeholder="Describe the rule, observation, or lesson..."></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Date Learned</label>
+        <input type="date" class="form-input" id="ruleDate">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal('addRuleModal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveCustomNote()">Save Note</button>
+    </div>
+  </div>
+</div>
+
+<!-- EDIT SECTION MODAL -->
+<div class="modal-overlay" id="editSectionModal">
+  <div class="modal" style="max-width:700px">
+    <div class="modal-header">
+      <div class="modal-title" id="editSectionTitle">// Edit Section</div>
+      <button class="modal-close" onclick="closeModal('editSectionModal')">×</button>
+    </div>
+    <div class="modal-body">
+      <div style="font-size:12px;color:var(--text2);margin-bottom:12px;line-height:1.5">Edit the content below. Use | to separate columns in table rows. Each line is one row.</div>
+      <textarea class="form-textarea" id="editSectionContent" style="min-height:300px;font-family:var(--mono);font-size:12px;line-height:1.6"></textarea>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal('editSectionModal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveEditedSection()">Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<!-- COPY CONFIRMATION TOAST -->
+<div id="copyToast" style="position:fixed;bottom:24px;right:24px;background:var(--bg2);border:1px solid var(--green);border-radius:8px;padding:12px 20px;font-family:var(--mono);font-size:12px;color:var(--green);z-index:9999;opacity:0;transition:opacity 0.3s;pointer-events:none">
+  ✓ Conversation starter copied to clipboard!
+</div>
+
+<!-- GAME PLAN MODAL -->
+<div class="modal-overlay" id="gamePlanModal">
+  <div class="modal" style="max-width:700px">
+    <div class="modal-header">
+      <div class="modal-title">// New Daily Game Plan</div>
+      <button class="modal-close" onclick="closeModal('gamePlanModal')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Date</label>
+        <input type="date" class="form-input" id="gpDate">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Paste Gareth's Article / Show Notes</label>
+        <textarea class="form-textarea" id="gpArticle" style="min-height:200px" placeholder="Paste the full text from Gareth's 'My Trading Game Plan' show here..."></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Macro Bias (Override if needed)</label>
+        <select class="form-select" id="gpBias">
+          <option value="">— Let AI Determine —</option>
+          <option value="bearish">Bearish</option>
+          <option value="neutral">Neutral</option>
+          <option value="bullish">Bullish</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal('gamePlanModal')">Cancel</button>
+      <button class="btn btn-primary" onclick="processGamePlan()">⚡ Process with AI</button>
+    </div>
+  </div>
+</div>
+
+<!-- WATCHLIST MODAL -->
+<div class="modal-overlay" id="watchModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">// Add to Watchlist</div>
+      <button class="modal-close" onclick="closeModal('watchModal')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Ticker</label>
+          <input type="text" class="form-input" id="wTicker" placeholder="AAPL" style="text-transform:uppercase">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Status</label>
+          <select class="form-select" id="wStatus">
+            <option value="watching">Watching</option>
+            <option value="forming">Setup Forming</option>
+            <option value="confirmed">Confirmed</option>
+            <option value="active">Active Trade</option>
+            <option value="pass">Pass</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Probability %</label>
+          <input type="number" class="form-input" id="wProb" placeholder="70" min="0" max="100">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Entry Zone</label>
+          <input type="text" class="form-input" id="wEntry" placeholder="$65-68">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Stop Level</label>
+          <input type="text" class="form-input" id="wStop" placeholder="$63">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Target 1</label>
+          <input type="text" class="form-input" id="wTarget" placeholder="$75">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Pattern / Setup Type</label>
+        <input type="text" class="form-input" id="wPattern" placeholder="e.g. 40-year trendline support, oversold RSI">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Catalyst Date (if any)</label>
+        <input type="date" class="form-input" id="wCatalyst">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Notes</label>
+        <textarea class="form-textarea" id="wNotes" placeholder="Fundamental context, key observations..."></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Confirmation Checklist</label>
+        <ul class="confirmations-checklist" id="wChecklist">
+          <li class="confirmation-item"><input type="checkbox" id="c1"><label for="c1">Price holding key support level</label></li>
+          <li class="confirmation-item"><input type="checkbox" id="c2"><label for="c2">2 candle closes above resistance</label></li>
+          <li class="confirmation-item"><input type="checkbox" id="c3"><label for="c3">RSI showing extreme reading or divergence</label></li>
+          <li class="confirmation-item"><input type="checkbox" id="c4"><label for="c4">Volume confirmation</label></li>
+          <li class="confirmation-item"><input type="checkbox" id="c5"><label for="c5">No negative fundamental catalyst</label></li>
+          <li class="confirmation-item"><input type="checkbox" id="c6"><label for="c6">Aligned with macro bias</label></li>
+        </ul>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal('watchModal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveWatchItem()">Save to Watchlist</button>
+    </div>
+  </div>
+</div>
+
+<!-- CHART LOG MODAL -->
+<div class="modal-overlay" id="chartModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">// Log Chart Analysis</div>
+      <button class="modal-close" onclick="closeModal('chartModal')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Ticker</label>
+          <input type="text" class="form-input" id="cTicker" placeholder="AAPL" style="text-transform:uppercase">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Date Analyzed</label>
+          <input type="date" class="form-input" id="cDate">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Timeframe</label>
+          <select class="form-select" id="cTimeframe">
+            <option>Daily</option>
+            <option>Weekly</option>
+            <option>Monthly</option>
+            <option>1H</option>
+            <option>15M</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Patterns Identified (comma separated)</label>
+        <input type="text" class="form-input" id="cPatterns" placeholder="e.g. Head & Shoulders, 40-yr trendline, Bearish RSI divergence">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Probability Rating %</label>
+          <input type="number" class="form-input" id="cProb" placeholder="70" min="0" max="100">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Verdict</label>
+          <select class="form-select" id="cVerdict">
+            <option value="watchlist">Add to Watchlist</option>
+            <option value="pass">Pass — Below Threshold</option>
+            <option value="trade">Ready to Trade</option>
+            <option value="avoid">Avoid — Fundamental Issue</option>
+            <option value="short">Short Setup</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Analysis Notes</label>
+        <textarea class="form-textarea" id="cNotes" style="min-height:100px" placeholder="Key observations, measured move targets, fundamental context..."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal('chartModal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveChartLog()">Save Analysis</button>
+    </div>
+  </div>
+</div>
+
+<!-- TRADE MODAL -->
+<div class="modal-overlay" id="tradeModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">// Log Trade</div>
+      <button class="modal-close" onclick="closeModal('tradeModal')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Ticker</label>
+          <input type="text" class="form-input" id="tTicker" placeholder="AAPL" style="text-transform:uppercase">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Direction</label>
+          <select class="form-select" id="tDirection">
+            <option value="long">Long</option>
+            <option value="short">Short</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Date</label>
+          <input type="date" class="form-input" id="tDate">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Entry Price</label>
+          <input type="number" step="0.01" class="form-input" id="tEntry" placeholder="0.00">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Exit Price</label>
+          <input type="number" step="0.01" class="form-input" id="tExit" placeholder="0.00">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Shares / Contracts</label>
+          <input type="number" class="form-input" id="tSize" placeholder="100">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Probability at Entry %</label>
+          <input type="number" class="form-input" id="tProb" placeholder="70" min="0" max="100">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Result</label>
+          <select class="form-select" id="tResult">
+            <option value="win">Win</option>
+            <option value="loss">Loss</option>
+            <option value="breakeven">Break Even</option>
+            <option value="open">Still Open</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Trade Notes / Lessons</label>
+        <textarea class="form-textarea" id="tNotes" placeholder="What worked, what didn't, lessons learned..."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal('tradeModal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveTrade()">Log Trade</button>
+    </div>
+  </div>
+</div>
+
+<!-- TTC MODAL -->
+<div class="modal-overlay" id="ttcModal">
+  <div class="modal" style="max-width:700px">
+    <div class="modal-header">
+      <div class="modal-title">// Trading the Close — Show Notes</div>
+      <button class="modal-close" onclick="closeModal('ttcModal')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Date</label>
+        <input type="date" class="form-input" id="ttcDate">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Trader / Host Name</label>
+        <input type="text" class="form-input" id="ttcHost" placeholder="e.g. John Smith">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Paste Show Notes / Article</label>
+        <textarea class="form-textarea" id="ttcArticle" style="min-height:200px" placeholder="Paste the full Trading the Close show notes here..."></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Macro Bias (Override if needed)</label>
+        <select class="form-select" id="ttcBias">
+          <option value="">— Let AI Determine —</option>
+          <option value="bearish">Bearish</option>
+          <option value="neutral">Neutral</option>
+          <option value="bullish">Bullish</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal('ttcModal')">Cancel</button>
+      <button class="btn btn-primary" onclick="processTTC()">⚡ Process with AI</button>
+    </div>
+  </div>
+</div>
+
+<!-- SCORECARD MODAL -->
+<div class="modal-overlay" id="scorecardModal">
+  <div class="modal" style="max-width:700px">
+    <div class="modal-header">
+      <div class="modal-title">// Update Call Outcome</div>
+      <button class="modal-close" onclick="closeModal('scorecardModal')">×</button>
+    </div>
+    <div class="modal-body">
+      <div id="scorecardForm"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal('scorecardModal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveScorecardEntry()">Save Outcome</button>
+    </div>
+  </div>
+</div>
+
+
+<script>
+// ═══════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════
+const state = {
+  gamePlans: [],
+  ttcShows: [],
+  scorecard: [],
+  watchlist: [],
+  chartLog: [],
+  trades: []
+};
+
+// ═══════════════════════════════════════════════════════
+// STORAGE (using window.storage API)
+// ═══════════════════════════════════════════════════════
+async function saveState() {
+  try {
+    await window.storage.set('tradedesk-state', JSON.stringify(state));
+  } catch(e) {
+    // fallback silent
+  }
+}
+
+async function loadState() {
+  try {
+    const result = await window.storage.get('tradedesk-state');
+    if (result && result.value) {
+      const saved = JSON.parse(result.value);
+      Object.assign(state, saved);
+    }
+  } catch(e) { /* first load */ }
+}
+
+// ═══════════════════════════════════════════════════════
+// TABS
+// ═══════════════════════════════════════════════════════
+function switchTab(tab) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+  event.target.classList.add('active');
+}
+
+// ═══════════════════════════════════════════════════════
+// MODALS
+// ═══════════════════════════════════════════════════════
+function openModal(id) {
+  document.getElementById(id).classList.add('open');
+  // Set default dates
+  const today = new Date().toISOString().split('T')[0];
+  const dateInputs = document.querySelectorAll(`#${id} input[type="date"]`);
+  dateInputs.forEach(i => { if (!i.value) i.value = today; });
+}
+
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+}
+
+// Close on overlay click
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) overlay.classList.remove('open');
+  });
+});
+
+// ═══════════════════════════════════════════════════════
+// CLAUDE API — routes through Netlify serverless function
+// ═══════════════════════════════════════════════════════
+async function callClaude(prompt, systemPrompt) {
+  const response = await fetch('/.netlify/functions/claude', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      max_tokens: 1000,
+      system: systemPrompt,
+      messages: [{ role: 'user', content: prompt }]
+    })
+  });
+  if (!response.ok) {
+    const err = await response.json().catch(() => ({}));
+    throw new Error(err?.error || `Server error ${response.status}`);
+  }
+  const data = await response.json();
+  return data.content[0].text;
+}
+
+// ═══════════════════════════════════════════════════════
+// GAME PLAN
+// ═══════════════════════════════════════════════════════
+async function processGamePlan() {
+  const date = document.getElementById('gpDate').value;
+  const article = document.getElementById('gpArticle').value.trim();
+  const biasPick = document.getElementById('gpBias').value;
+
+  if (!article) { alert('Please paste the article text first.'); return; }
+
+  closeModal('gamePlanModal');
+
+  document.getElementById('gamePlanDisplay').innerHTML = `
+    <div class="card">
+      <div class="card-body">
+        <div class="ai-loading">
+          <div class="spinner"></div>
+          <span>Analyzing Gareth's Game Plan with AI...</span>
+        </div>
+      </div>
+    </div>`;
+
+  try {
+    const systemPrompt = `You are a trading analysis assistant specialized in Gareth Soloway's technical analysis methodology. Extract structured data from his "My Trading Game Plan" articles. Return ONLY valid JSON, no markdown, no explanation.`;
+
+    const prompt = `Extract the following from this trading article and return as JSON:
+{
+  "macro_bias": "bearish|neutral|bullish",
+  "bias_reason": "one sentence summary",
+  "summary": "3-4 sentence executive summary of the key themes",
+  "key_levels": [
+    {"ticker": "SPY", "price": "6550", "type": "support|resistance|target|watch", "note": "brief note"}
+  ],
+  "specific_setups": [
+    {"ticker": "IONQ", "direction": "long|short", "entry": "$X", "target": "$Y", "stop": "$Z", "note": "brief rationale"}
+  ],
+  "macro_risks": ["risk1", "risk2"],
+  "key_quote": "most important quote from Gareth"
+}
+
+Article:
+${article}`;
+
+    const raw = await callClaude(prompt, systemPrompt);
+    let extracted;
+    try {
+      extracted = JSON.parse(raw.replace(/```json|```/g, '').trim());
+    } catch(e) {
+      extracted = { macro_bias: biasPick || 'neutral', bias_reason: 'See summary', summary: raw, key_levels: [], specific_setups: [], macro_risks: [], key_quote: '' };
+    }
+
+    if (biasPick) extracted.macro_bias = biasPick;
+
+    const plan = { id: Date.now(), date, article, ...extracted };
+    state.gamePlans.unshift(plan);
+    await saveState();
+    renderGamePlan(plan);
+    updateHeaderBias(plan.macro_bias);
+
+  } catch(e) {
+    document.getElementById('gamePlanDisplay').innerHTML = `
+      <div class="card"><div class="card-body">
+        <div style="color:var(--red);font-family:var(--mono);font-size:12px;">Error processing article. Check your connection and try again.</div>
+      </div></div>`;
+  }
+}
+
+function renderGamePlan(plan) {
+  const biasColor = plan.macro_bias === 'bearish' ? 'bearish' : plan.macro_bias === 'bullish' ? 'bullish' : 'neutral';
+
+  const levelsHtml = (plan.key_levels || []).map(l => `
+    <li class="key-level-item">
+      <span class="level-ticker">${l.ticker}</span>
+      <span class="level-price">$${l.price}</span>
+      <span class="level-note">${l.note}</span>
+      <span class="level-type ${l.type}">${l.type}</span>
+    </li>`).join('');
+
+  const setupsHtml = (plan.specific_setups || []).map(s => `
+    <div style="padding:10px;border:1px solid var(--border);border-radius:6px;margin-bottom:8px;background:var(--bg3)">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
+        <span style="font-family:var(--display);font-size:22px;letter-spacing:1px">${s.ticker}</span>
+        <span class="watch-status status-${s.direction === 'long' ? 'confirmed' : 'pass'}">${s.direction?.toUpperCase()}</span>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:6px">
+        <div class="level-box entry"><div class="level-box-label">Entry</div><div class="level-box-value">${s.entry || '—'}</div></div>
+        <div class="level-box target"><div class="level-box-label">Target</div><div class="level-box-value">${s.target || '—'}</div></div>
+        <div class="level-box stop"><div class="level-box-label">Stop</div><div class="level-box-value">${s.stop || '—'}</div></div>
+      </div>
+      <div style="font-size:12px;color:var(--text2)">${s.note}</div>
+    </div>`).join('');
+
+  const risksHtml = (plan.macro_risks || []).map(r => `
+    <div style="display:flex;align-items:flex-start;gap:8px;padding:6px 0;border-bottom:1px solid var(--border);font-size:13px;color:var(--text2)">
+      <span style="color:var(--red);flex-shrink:0">▲</span>${r}
+    </div>`).join('');
+
+  document.getElementById('gamePlanDisplay').innerHTML = `
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+      <div>
+        <div style="font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:2px;text-transform:uppercase">Game Plan for</div>
+        <div style="font-family:var(--display);font-size:36px;letter-spacing:3px">${formatDate(plan.date)}</div>
+      </div>
+      <button class="btn btn-sm" onclick="openModal('gamePlanModal')">＋ Update</button>
+    </div>
+
+    <div class="gameplan-grid">
+      <div class="card">
+        <div class="card-header"><span class="card-title">// Macro Bias</span></div>
+        <div class="card-body macro-bias-display">
+          <div class="bias-label ${biasColor}">${plan.macro_bias?.toUpperCase()}</div>
+          <div style="color:var(--text2);font-size:13px;margin-top:8px">${plan.bias_reason || ''}</div>
+          ${plan.key_quote ? `<div style="margin-top:16px;padding:12px;background:var(--bg3);border-left:2px solid var(--accent);border-radius:4px;font-size:12px;color:var(--text2);font-style:italic;text-align:left">"${plan.key_quote}"</div>` : ''}
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><span class="card-title">// Key Levels</span></div>
+        <div class="card-body" style="padding:12px 20px">
+          ${levelsHtml ? `<ul class="key-levels-list">${levelsHtml}</ul>` : '<div style="color:var(--text3);font-size:12px">No specific levels extracted</div>'}
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:16px">
+      <div class="card-header"><span class="card-title">// AI Summary</span></div>
+      <div class="card-body">
+        <div class="ai-summary-box">${plan.summary}</div>
+      </div>
+    </div>
+
+    ${setupsHtml ? `
+    <div class="card" style="margin-bottom:16px">
+      <div class="card-header"><span class="card-title">// Specific Setups Mentioned</span></div>
+      <div class="card-body">${setupsHtml}</div>
+    </div>` : ''}
+
+    ${risksHtml ? `
+    <div class="card">
+      <div class="card-header"><span class="card-title">// Macro Risks to Monitor</span></div>
+      <div class="card-body" style="padding:12px 20px">${risksHtml}</div>
+    </div>` : ''}
+  `;
+
+  updateHeaderBias(plan.macro_bias);
+}
+
+function updateHeaderBias(bias) {
+  const el = document.getElementById('headerBias');
+  el.textContent = (bias || 'neutral').toUpperCase() + ' BIAS';
+  el.className = 'market-pill ' + (bias || 'neutral');
+}
+
+// ═══════════════════════════════════════════════════════
+// WATCHLIST
+// ═══════════════════════════════════════════════════════
+function saveWatchItem() {
+  const ticker = document.getElementById('wTicker').value.trim().toUpperCase();
+  if (!ticker) { alert('Enter a ticker.'); return; }
+
+  const checks = ['c1','c2','c3','c4','c5','c6'].map(id => document.getElementById(id).checked);
+  const checkCount = checks.filter(Boolean).length;
+
+  const item = {
+    id: Date.now(),
+    ticker,
+    status: document.getElementById('wStatus').value,
+    prob: parseInt(document.getElementById('wProb').value) || 0,
+    entry: document.getElementById('wEntry').value,
+    stop: document.getElementById('wStop').value,
+    target: document.getElementById('wTarget').value,
+    pattern: document.getElementById('wPattern').value,
+    catalyst: document.getElementById('wCatalyst').value,
+    notes: document.getElementById('wNotes').value,
+    checks: checkCount,
+    date: new Date().toISOString().split('T')[0]
+  };
+
+  state.watchlist.unshift(item);
+  saveState();
+  renderWatchlist();
+  closeModal('watchModal');
+  // Reset
+  ['wTicker','wEntry','wStop','wTarget','wPattern','wNotes'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('wCatalyst').value = '';
+  ['c1','c2','c3','c4','c5','c6'].forEach(id => document.getElementById(id).checked = false);
+}
+
+function updateWatchStatus(id, status) {
+  const item = state.watchlist.find(w => w.id === id);
+  if (item) { item.status = status; saveState(); renderWatchlist(); }
+}
+
+function removeWatchItem(id) {
+  state.watchlist = state.watchlist.filter(w => w.id !== id);
+  saveState();
+  renderWatchlist();
+}
+
+function renderWatchlist() {
+  const grid = document.getElementById('watchlistGrid');
+  const badge = document.getElementById('watchBadge');
+  const active = state.watchlist.filter(w => w.status !== 'closed' && w.status !== 'pass');
+  badge.textContent = active.length;
+
+  if (!state.watchlist.length) {
+    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1">
+      <div class="empty-state-icon">👁</div>
+      <h3>Watchlist Empty</h3>
+      <p>Add tickers from your screener to track setups,<br>key levels, and catalyst dates.</p>
+    </div>`;
+    return;
+  }
+
+  grid.innerHTML = state.watchlist.map(item => {
+    const probClass = item.prob >= 70 ? 'high' : item.prob >= 60 ? 'med' : 'low';
+    const catalystHtml = item.catalyst ? `<div class="watch-catalyst">⚡ Catalyst: ${formatDate(item.catalyst)}</div>` : '';
+
+    return `<div class="watch-card">
+      <div class="watch-card-header">
+        <div class="watch-ticker">${item.ticker}</div>
+        <div class="watch-status status-${item.status}">${item.status}</div>
+      </div>
+      <div class="watch-card-body">
+        <div class="watch-levels">
+          <div class="level-box entry"><div class="level-box-label">Entry</div><div class="level-box-value">${item.entry || '—'}</div></div>
+          <div class="level-box stop"><div class="level-box-label">Stop</div><div class="level-box-value">${item.stop || '—'}</div></div>
+          <div class="level-box target"><div class="level-box-label">Target</div><div class="level-box-value">${item.target || '—'}</div></div>
+        </div>
+        ${item.prob ? `<div class="watch-prob">
+          <span class="inline-label">Prob</span>
+          <div class="prob-bar"><div class="prob-fill ${probClass}" style="width:${item.prob}%"></div></div>
+          <span class="prob-text">${item.prob}%</span>
+        </div>` : ''}
+        ${item.pattern ? `<div style="font-size:11px;color:var(--accent);font-family:var(--mono);margin-bottom:8px">${item.pattern}</div>` : ''}
+        ${catalystHtml}
+        ${item.notes ? `<div class="watch-notes">${item.notes}</div>` : ''}
+        ${item.checks ? `<div style="font-size:11px;color:var(--text3);font-family:var(--mono);margin-bottom:8px">✓ ${item.checks}/6 confirmations</div>` : ''}
+        <div class="watch-actions">
+          <select class="form-select" style="font-size:10px;padding:4px 6px;height:auto;flex:1" onchange="updateWatchStatus(${item.id}, this.value)">
+            <option value="watching" ${item.status==='watching'?'selected':''}>Watching</option>
+            <option value="forming" ${item.status==='forming'?'selected':''}>Forming</option>
+            <option value="confirmed" ${item.status==='confirmed'?'selected':''}>Confirmed</option>
+            <option value="active" ${item.status==='active'?'selected':''}>Active</option>
+            <option value="pass" ${item.status==='pass'?'selected':''}>Pass</option>
+            <option value="closed" ${item.status==='closed'?'selected':''}>Closed</option>
+          </select>
+          <button class="btn btn-sm btn-danger" onclick="removeWatchItem(${item.id})">✕</button>
+        </div>
+        <div class="watch-date">Added ${formatDate(item.date)}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════════════
+// CHART LOG
+// ═══════════════════════════════════════════════════════
+function saveChartLog() {
+  const ticker = document.getElementById('cTicker').value.trim().toUpperCase();
+  if (!ticker) { alert('Enter a ticker.'); return; }
+
+  const entry = {
+    id: Date.now(),
+    ticker,
+    date: document.getElementById('cDate').value,
+    timeframe: document.getElementById('cTimeframe').value,
+    patterns: document.getElementById('cPatterns').value,
+    prob: parseInt(document.getElementById('cProb').value) || 0,
+    verdict: document.getElementById('cVerdict').value,
+    notes: document.getElementById('cNotes').value
+  };
+
+  state.chartLog.unshift(entry);
+  saveState();
+  renderChartLog();
+  closeModal('chartModal');
+  ['cTicker','cPatterns','cNotes'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('cProb').value = '';
+}
+
+function removeChartEntry(id) {
+  state.chartLog = state.chartLog.filter(c => c.id !== id);
+  saveState();
+  renderChartLog();
+}
+
+function renderChartLog() {
+  const body = document.getElementById('chartLogBody');
+  const badge = document.getElementById('logBadge');
+  badge.textContent = state.chartLog.length;
+
+  if (!state.chartLog.length) {
+    body.innerHTML = `<div class="empty-state">
+      <div class="empty-state-icon">📊</div>
+      <h3>No Charts Logged</h3>
+      <p>Log your chart analyses with patterns, probability ratings,<br>and notes to build your trading record.</p>
+    </div>`;
+    return;
+  }
+
+  const verdictColors = { watchlist:'accent', pass:'text3', trade:'green', avoid:'red', short:'orange' };
+  const verdictLabels = { watchlist:'WATCHLIST', pass:'PASS', trade:'TRADE READY', avoid:'AVOID', short:'SHORT' };
+
+  body.innerHTML = `<table class="chart-log-table">
+    <thead>
+      <tr>
+        <th>Ticker</th><th>Date</th><th>TF</th><th>Patterns</th><th>Prob</th><th>Verdict</th><th>Notes</th><th></th>
+      </tr>
+    </thead>
+    <tbody>
+      ${state.chartLog.map(entry => `
+        <tr>
+          <td class="ticker-cell">${entry.ticker}</td>
+          <td style="font-family:var(--mono);font-size:11px;color:var(--text2)">${formatDate(entry.date)}</td>
+          <td style="font-family:var(--mono);font-size:11px;color:var(--text3)">${entry.timeframe}</td>
+          <td>${(entry.patterns||'').split(',').map(p => `<span class="pattern-tag">${p.trim()}</span>`).join('')}</td>
+          <td style="font-family:var(--mono);font-size:12px;color:${entry.prob>=70?'var(--green)':entry.prob>=60?'var(--yellow)':'var(--red)'};font-weight:700">${entry.prob}%</td>
+          <td><span style="font-family:var(--mono);font-size:9px;color:var(--${verdictColors[entry.verdict]||'text2'})">${verdictLabels[entry.verdict]||entry.verdict}</span></td>
+          <td style="font-size:12px;color:var(--text2);max-width:300px">${entry.notes}</td>
+          <td><button class="btn btn-sm btn-danger" onclick="removeChartEntry(${entry.id})">✕</button></td>
+        </tr>`).join('')}
+    </tbody>
+  </table>`;
+}
+
+// ═══════════════════════════════════════════════════════
+// TRADE JOURNAL
+// ═══════════════════════════════════════════════════════
+function saveTrade() {
+  const ticker = document.getElementById('tTicker').value.trim().toUpperCase();
+  if (!ticker) { alert('Enter a ticker.'); return; }
+
+  const entry = parseInt(document.getElementById('tEntry').value) || 0;
+  const exit = parseFloat(document.getElementById('tExit').value) || 0;
+  const size = parseInt(document.getElementById('tSize').value) || 0;
+  const direction = document.getElementById('tDirection').value;
+
+  let pnl = 0;
+  if (exit && entry && size) {
+    pnl = direction === 'long' ? (exit - entry) * size : (entry - exit) * size;
+  }
+
+  const trade = {
+    id: Date.now(),
+    ticker,
+    direction,
+    date: document.getElementById('tDate').value,
+    entry: parseFloat(document.getElementById('tEntry').value),
+    exit: parseFloat(document.getElementById('tExit').value),
+    size,
+    prob: parseInt(document.getElementById('tProb').value) || 0,
+    result: document.getElementById('tResult').value,
+    notes: document.getElementById('tNotes').value,
+    pnl: Math.round(pnl * 100) / 100
+  };
+
+  state.trades.unshift(trade);
+  saveState();
+  renderTradeJournal();
+  closeModal('tradeModal');
+  ['tTicker','tEntry','tExit','tSize','tProb','tNotes'].forEach(id => document.getElementById(id).value = '');
+}
+
+function removeTradeEntry(id) {
+  state.trades = state.trades.filter(t => t.id !== id);
+  saveState();
+  renderTradeJournal();
+}
+
+function renderTradeJournal() {
+  const body = document.getElementById('tradeLogBody');
+  const closed = state.trades.filter(t => t.result !== 'open');
+  const wins = closed.filter(t => t.result === 'win').length;
+  const totalPnl = state.trades.reduce((sum, t) => sum + (t.pnl || 0), 0);
+  const avgProb = state.trades.length ? Math.round(state.trades.reduce((s, t) => s + t.prob, 0) / state.trades.length) : 0;
+
+  document.getElementById('statTotal').textContent = state.trades.length;
+  document.getElementById('statWins').textContent = closed.length ? Math.round(wins/closed.length*100) + '%' : '—';
+  document.getElementById('statWins').className = 'stat-value ' + (wins/closed.length >= 0.6 ? 'positive' : 'negative');
+  document.getElementById('statPnl').textContent = (totalPnl >= 0 ? '+$' : '-$') + Math.abs(totalPnl).toLocaleString();
+  document.getElementById('statPnl').className = 'stat-value ' + (totalPnl >= 0 ? 'positive' : 'negative');
+  document.getElementById('statAvgProb').textContent = avgProb ? avgProb + '%' : '—';
+
+  if (!state.trades.length) {
+    body.innerHTML = `<div class="empty-state">
+      <div class="empty-state-icon">💼</div>
+      <h3>No Trades Logged</h3>
+      <p>Log completed trades to track your performance<br>and win rate over time.</p>
+    </div>`;
+    return;
+  }
+
+  body.innerHTML = state.trades.map(t => {
+    const pnlClass = t.pnl > 0 ? 'pnl-positive' : t.pnl < 0 ? 'pnl-negative' : 'pnl-neutral';
+    const pnlStr = t.pnl > 0 ? '+$' + t.pnl : t.pnl < 0 ? '-$' + Math.abs(t.pnl) : '—';
+    return `<div class="trade-row">
+      <div class="trade-ticker">${t.ticker}</div>
+      <div style="font-family:var(--mono);font-size:12px;color:var(--accent)">$${t.entry}</div>
+      <div style="font-family:var(--mono);font-size:12px;color:var(--text2)">$${t.exit || '—'}</div>
+      <div style="font-family:var(--mono);font-size:12px;color:var(--text2)">${t.size} sh</div>
+      <div class="${pnlClass}">${pnlStr}</div>
+      <div style="font-family:var(--mono);font-size:11px;color:${t.prob>=70?'var(--green)':'var(--yellow)'}">${t.prob}%</div>
+      <div style="font-size:12px;color:var(--text2)">${t.notes}</div>
+      <button class="btn btn-sm btn-danger" onclick="removeTradeEntry(${t.id})">✕</button>
+    </div>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════════════
+// UTILS
+// ═══════════════════════════════════════════════════════
+function formatDate(dateStr) {
+  if (!dateStr) return '—';
+  const d = new Date(dateStr + 'T12:00:00');
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+}
+
+// ═══════════════════════════════════════════════════════
+// TRADING THE CLOSE
+// ═══════════════════════════════════════════════════════
+async function processTTC() {
+  const date = document.getElementById('ttcDate').value;
+  const article = document.getElementById('ttcArticle').value.trim();
+  const host = document.getElementById('ttcHost').value.trim();
+  const biasPick = document.getElementById('ttcBias').value;
+  if (!article) { alert('Please paste the show notes first.'); return; }
+  closeModal('ttcModal');
+  document.getElementById('ttcDisplay').innerHTML = `<div class="card"><div class="card-body"><div class="ai-loading"><div class="spinner"></div><span>Analyzing Trading the Close with AI...</span></div></div></div>`;
+  try {
+    const systemPrompt = `You are a trading analysis assistant. Extract structured data from Trading the Close show notes. Return ONLY valid JSON.`;
+    const prompt = `Extract from this Trading the Close show and return as JSON:
+{
+  "macro_bias": "bearish|neutral|bullish",
+  "bias_reason": "one sentence",
+  "summary": "3-4 sentence executive summary",
+  "key_levels": [{"ticker":"","price":"","type":"support|resistance|target|watch","note":""}],
+  "specific_setups": [{"ticker":"","direction":"long|short","entry":"","target":"","stop":"","note":"","asset_class":"stock|crypto|commodity|forex|index"}],
+  "macro_risks": ["risk1"],
+  "assets_covered": ["stocks","crypto","commodities"],
+  "key_quote": "most important quote"
+}
+Show notes:\n${article}`;
+    const raw = await callClaude(prompt, systemPrompt);
+    let extracted;
+    try { extracted = JSON.parse(raw.replace(/```json|```/g,'').trim()); }
+    catch(e) { extracted = { macro_bias: biasPick||'neutral', bias_reason:'See summary', summary: raw, key_levels:[], specific_setups:[], macro_risks:[], assets_covered:[], key_quote:'' }; }
+    if (biasPick) extracted.macro_bias = biasPick;
+    const show = { id: Date.now(), date, host, article, ...extracted };
+    state.ttcShows.unshift(show);
+    await saveState();
+    renderTTC(show);
+  } catch(e) {
+    document.getElementById('ttcDisplay').innerHTML = `<div class="card"><div class="card-body"><div style="color:var(--red);font-family:var(--mono);font-size:12px;">Error processing show notes. Try again.</div></div></div>`;
+  }
+}
+
+function renderTTC(show) {
+  const biasColor = show.macro_bias === 'bearish' ? 'bearish' : show.macro_bias === 'bullish' ? 'bullish' : 'neutral';
+  const levelsHtml = (show.key_levels||[]).map(l => `
+    <li class="key-level-item">
+      <span class="level-ticker">${l.ticker}</span>
+      <span class="level-price">$${l.price}</span>
+      <span class="level-note">${l.note}</span>
+      <span class="level-type ${l.type}">${l.type}</span>
+    </li>`).join('');
+  const setupsHtml = (show.specific_setups||[]).map(s => `
+    <div style="padding:10px;border:1px solid var(--border);border-radius:6px;margin-bottom:8px;background:var(--bg3)">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
+        <span style="font-family:var(--display);font-size:22px;letter-spacing:1px">${s.ticker}</span>
+        <span class="watch-status status-${s.direction==='long'?'confirmed':'pass'}">${s.direction?.toUpperCase()}</span>
+        ${s.asset_class ? `<span style="font-family:var(--mono);font-size:9px;color:var(--text3);text-transform:uppercase">${s.asset_class}</span>` : ''}
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:6px">
+        <div class="level-box entry"><div class="level-box-label">Entry</div><div class="level-box-value">${s.entry||'—'}</div></div>
+        <div class="level-box target"><div class="level-box-label">Target</div><div class="level-box-value">${s.target||'—'}</div></div>
+        <div class="level-box stop"><div class="level-box-label">Stop</div><div class="level-box-value">${s.stop||'—'}</div></div>
+      </div>
+      <div style="font-size:12px;color:var(--text2)">${s.note}</div>
+    </div>`).join('');
+  document.getElementById('ttcDisplay').innerHTML = `
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+      <div>
+        <div style="font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:2px;text-transform:uppercase">Trading the Close — ${show.host||'Show'}</div>
+        <div style="font-family:var(--display);font-size:36px;letter-spacing:3px">${formatDate(show.date)}</div>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-sm btn-success" onclick="generateCombinedIntelligence()">⚡ Run Combined Analysis</button>
+        <button class="btn btn-sm" onclick="openModal('ttcModal')">＋ Update</button>
+      </div>
+    </div>
+    <div class="gameplan-grid">
+      <div class="card">
+        <div class="card-header"><span class="card-title">// Macro Bias</span></div>
+        <div class="card-body macro-bias-display">
+          <div class="bias-label ${biasColor}">${show.macro_bias?.toUpperCase()}</div>
+          <div style="color:var(--text2);font-size:13px;margin-top:8px">${show.bias_reason||''}</div>
+          ${show.key_quote ? `<div style="margin-top:16px;padding:12px;background:var(--bg3);border-left:2px solid var(--orange);border-radius:4px;font-size:12px;color:var(--text2);font-style:italic;text-align:left">"${show.key_quote}"</div>` : ''}
+          ${(show.assets_covered||[]).length ? `<div style="margin-top:12px;display:flex;gap:6px;flex-wrap:wrap;justify-content:center">${show.assets_covered.map(a=>`<span style="font-family:var(--mono);font-size:9px;padding:2px 8px;background:rgba(255,107,53,0.15);color:var(--orange);border-radius:3px;border:1px solid rgba(255,107,53,0.3)">${a}</span>`).join('')}</div>` : ''}
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><span class="card-title">// Key Levels</span></div>
+        <div class="card-body" style="padding:12px 20px">
+          ${levelsHtml ? `<ul class="key-levels-list">${levelsHtml}</ul>` : '<div style="color:var(--text3);font-size:12px">No specific levels extracted</div>'}
+        </div>
+      </div>
+    </div>
+    <div class="card" style="margin-bottom:16px">
+      <div class="card-header"><span class="card-title">// AI Summary</span></div>
+      <div class="card-body"><div class="ai-summary-box">${show.summary}</div></div>
+    </div>
+    ${setupsHtml ? `<div class="card"><div class="card-header"><span class="card-title">// Specific Setups</span></div><div class="card-body">${setupsHtml}</div></div>` : ''}`;
+}
+
+// ═══════════════════════════════════════════════════════
+// COMBINED INTELLIGENCE
+// ═══════════════════════════════════════════════════════
+async function generateCombinedIntelligence() {
+  const gp = state.gamePlans[0];
+  const ttc = state.ttcShows[0];
+  if (!gp && !ttc) { alert('Add at least one show first.'); return; }
+
+  // Switch to combined tab
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-combined').classList.add('active');
+  document.querySelectorAll('.nav-tab')[2].classList.add('active');
+
+  document.getElementById('combinedDisplay').innerHTML = `<div class="card"><div class="card-body"><div class="ai-loading"><div class="spinner"></div><span>Generating Combined Intelligence Report...</span></div></div></div>`;
+
+  try {
+    const gpSummary = gp ? `GARETH'S GAME PLAN (${gp.date}): Bias: ${gp.macro_bias}. ${gp.summary} Setups: ${(gp.specific_setups||[]).map(s=>`${s.ticker} ${s.direction} @ ${s.entry}`).join(', ')}` : 'Not available today';
+    const ttcSummary = ttc ? `TRADING THE CLOSE (${ttc.date}): Bias: ${ttc.macro_bias}. ${ttc.summary} Setups: ${(ttc.specific_setups||[]).map(s=>`${s.ticker} ${s.direction} @ ${s.entry}`).join(', ')}` : 'Not available today';
+
+    const prompt = `Compare these two show summaries and return JSON only:
+{
+  "overall_consensus": "bearish|neutral|bullish|conflicted",
+  "consensus_strength": "strong|moderate|weak",
+  "consensus_note": "1-2 sentence overall takeaway",
+  "agreements": [{"ticker":"","both_say":"","conviction":"high|medium","note":""}],
+  "conflicts": [{"ticker":"","gareth_says":"","ttc_says":"","recommendation":"follow_gareth|follow_ttc|avoid|wait","reason":""}],
+  "ttc_only_setups": [{"ticker":"","direction":"","note":"","worth_watching":true}],
+  "gareth_only_setups": [{"ticker":"","direction":"","note":"","worth_watching":true}],
+  "top_3_highest_conviction": [{"ticker":"","why":"","action":""}],
+  "tickers_to_avoid": [{"ticker":"","reason":""}]
+}
+
+${gpSummary}
+
+${ttcSummary}`;
+
+    const raw = await callClaude(prompt, 'You are a trading analysis assistant. Compare two analysts and identify agreement, conflict, and combined signals. Return only valid JSON.');
+    let data;
+    try { data = JSON.parse(raw.replace(/```json|```/g,'').trim()); }
+    catch(e) { data = null; }
+
+    renderCombined(data, gp, ttc);
+  } catch(e) {
+    document.getElementById('combinedDisplay').innerHTML = `<div class="card"><div class="card-body"><div style="color:var(--red);font-family:var(--mono);font-size:12px;">Error generating analysis. Try again.</div></div></div>`;
+  }
+}
+
+function renderCombined(data, gp, ttc) {
+  if (!data) {
+    document.getElementById('combinedDisplay').innerHTML = `<div class="card"><div class="card-body"><div style="color:var(--red)">Could not parse AI response.</div></div></div>`;
+    return;
+  }
+  const consensusColor = data.overall_consensus==='bullish'?'var(--green)':data.overall_consensus==='bearish'?'var(--red)':data.overall_consensus==='conflicted'?'var(--orange)':'var(--yellow)';
+  const strengthBadge = data.consensus_strength==='strong'?`<span style="background:rgba(0,230,118,0.15);color:var(--green);border:1px solid rgba(0,230,118,0.3);font-family:var(--mono);font-size:9px;padding:2px 8px;border-radius:3px;text-transform:uppercase">Strong</span>`:data.consensus_strength==='moderate'?`<span style="background:rgba(255,211,42,0.15);color:var(--yellow);border:1px solid rgba(255,211,42,0.3);font-family:var(--mono);font-size:9px;padding:2px 8px;border-radius:3px;text-transform:uppercase">Moderate</span>`:`<span style="background:rgba(255,71,87,0.15);color:var(--red);border:1px solid rgba(255,71,87,0.3);font-family:var(--mono);font-size:9px;padding:2px 8px;border-radius:3px;text-transform:uppercase">Weak</span>`;
+
+  const agreementsHtml = (data.agreements||[]).map(a=>`
+    <div style="padding:12px;background:rgba(0,230,118,0.05);border:1px solid rgba(0,230,118,0.2);border-radius:6px;margin-bottom:8px">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px">
+        <span style="font-family:var(--display);font-size:22px;color:var(--green)">${a.ticker}</span>
+        <span style="font-family:var(--mono);font-size:9px;color:var(--green)">✓ BOTH AGREE</span>
+        ${a.conviction==='high'?`<span style="font-family:var(--mono);font-size:9px;padding:2px 6px;background:rgba(0,230,118,0.2);color:var(--green);border-radius:3px">HIGH CONVICTION</span>`:''}
+      </div>
+      <div style="font-size:12px;color:var(--text2)">${a.both_say}</div>
+      ${a.note?`<div style="font-size:11px;color:var(--text3);margin-top:4px">${a.note}</div>`:''}
+    </div>`).join('');
+
+  const conflictsHtml = (data.conflicts||[]).map(c=>{
+    const recColor = c.recommendation==='follow_gareth'?'var(--accent)':c.recommendation==='follow_ttc'?'var(--orange)':c.recommendation==='avoid'?'var(--red)':'var(--yellow)';
+    const recLabel = c.recommendation==='follow_gareth'?'Follow Gareth':c.recommendation==='follow_ttc'?'Follow TTC':c.recommendation==='avoid'?'Avoid':'Wait';
+    return `<div style="padding:12px;background:rgba(255,107,53,0.05);border:1px solid rgba(255,107,53,0.2);border-radius:6px;margin-bottom:8px">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+        <span style="font-family:var(--display);font-size:22px;color:var(--orange)">${c.ticker}</span>
+        <span style="font-family:var(--mono);font-size:9px;color:var(--orange)">⚡ CONFLICT</span>
+        <span style="font-family:var(--mono);font-size:9px;padding:2px 6px;background:rgba(0,0,0,0.3);color:${recColor};border:1px solid ${recColor};border-radius:3px">${recLabel}</span>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
+        <div style="padding:8px;background:rgba(0,212,255,0.05);border:1px solid rgba(0,212,255,0.2);border-radius:4px">
+          <div style="font-family:var(--mono);font-size:9px;color:var(--accent);margin-bottom:3px">GARETH</div>
+          <div style="font-size:12px;color:var(--text2)">${c.gareth_says}</div>
+        </div>
+        <div style="padding:8px;background:rgba(255,107,53,0.05);border:1px solid rgba(255,107,53,0.2);border-radius:4px">
+          <div style="font-family:var(--mono);font-size:9px;color:var(--orange);margin-bottom:3px">TRADING THE CLOSE</div>
+          <div style="font-size:12px;color:var(--text2)">${c.ttc_says}</div>
+        </div>
+      </div>
+      <div style="font-size:11px;color:var(--text3)">${c.reason}</div>
+    </div>`;}).join('');
+
+  const top3Html = (data.top_3_highest_conviction||[]).map((t,i)=>`
+    <div style="padding:14px;border:1px solid var(--border2);border-radius:6px;margin-bottom:8px;background:var(--bg3);display:flex;gap:14px;align-items:flex-start">
+      <div style="font-family:var(--display);font-size:40px;color:var(--text3);line-height:1;min-width:30px">${i+1}</div>
+      <div>
+        <div style="font-family:var(--display);font-size:24px;letter-spacing:1px;color:var(--accent)">${t.ticker}</div>
+        <div style="font-size:12px;color:var(--text2);margin-top:4px">${t.why}</div>
+        <div style="font-family:var(--mono);font-size:10px;color:var(--green);margin-top:6px">→ ${t.action}</div>
+      </div>
+    </div>`).join('');
+
+  const avoidHtml = (data.tickers_to_avoid||[]).map(t=>`
+    <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)">
+      <span style="font-family:var(--display);font-size:20px;color:var(--red)">${t.ticker}</span>
+      <span style="font-size:12px;color:var(--text2)">${t.reason}</span>
+    </div>`).join('');
+
+  // Scorecard section
+  const scorecardHtml = renderScorecardSection();
+
+  document.getElementById('combinedDisplay').innerHTML = `
+    <div style="margin-bottom:20px">
+      <div style="font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:2px;text-transform:uppercase;margin-bottom:4px">Combined Intelligence — ${formatDate(gp?.date||ttc?.date)}</div>
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="font-family:var(--display);font-size:48px;letter-spacing:3px;color:${consensusColor}">${(data.overall_consensus||'').toUpperCase()}</div>
+        ${strengthBadge}
+      </div>
+      <div style="font-size:13px;color:var(--text2);margin-top:6px">${data.consensus_note||''}</div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+      <div class="card">
+        <div class="card-header"><span class="card-title" style="color:var(--green)">// Where They Agree</span></div>
+        <div class="card-body">${agreementsHtml||'<div style="color:var(--text3);font-size:12px">No agreements found — proceed with caution</div>'}</div>
+      </div>
+      <div class="card">
+        <div class="card-header"><span class="card-title" style="color:var(--orange)">// Where They Conflict</span></div>
+        <div class="card-body">${conflictsHtml||'<div style="color:var(--text3);font-size:12px">No conflicts — good alignment today</div>'}</div>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+      <div class="card">
+        <div class="card-header"><span class="card-title">// Top 3 Highest Conviction</span></div>
+        <div class="card-body">${top3Html||'<div style="color:var(--text3);font-size:12px">Not enough data</div>'}</div>
+      </div>
+      <div class="card">
+        <div class="card-header"><span class="card-title" style="color:var(--red)">// Tickers to Avoid Today</span></div>
+        <div class="card-body">${avoidHtml||'<div style="color:var(--text3);font-size:12px">None flagged</div>'}</div>
+      </div>
+    </div>
+
+    ${scorecardHtml}`;
+}
+
+// ═══════════════════════════════════════════════════════
+// SCORECARD
+// ═══════════════════════════════════════════════════════
+function renderScorecardSection() {
+  const rows = state.scorecard.length ? state.scorecard.map(s => {
+    const outcomeColor = s.outcome==='correct'?'var(--green)':s.outcome==='incorrect'?'var(--red)':'var(--yellow)';
+    const whoRight = s.who_correct==='gareth'?`<span style="color:var(--accent);font-family:var(--mono);font-size:10px">GARETH ✓</span>`:s.who_correct==='ttc'?`<span style="color:var(--orange);font-family:var(--mono);font-size:10px">TTC ✓</span>`:s.who_correct==='both'?`<span style="color:var(--green);font-family:var(--mono);font-size:10px">BOTH ✓</span>`:s.who_correct==='neither'?`<span style="color:var(--red);font-family:var(--mono);font-size:10px">NEITHER ✗</span>`:'<span style="color:var(--text3);font-size:10px">TBD</span>';
+    return `<tr>
+      <td style="font-family:var(--display);font-size:18px">${s.ticker}</td>
+      <td style="font-family:var(--mono);font-size:10px;color:var(--text2)">${formatDate(s.date)}</td>
+      <td style="font-family:var(--mono);font-size:10px;color:var(--accent)">${s.gareth_call||'—'}</td>
+      <td style="font-family:var(--mono);font-size:10px;color:var(--orange)">${s.ttc_call||'—'}</td>
+      <td style="font-family:var(--mono);font-size:11px;color:${outcomeColor};font-weight:700">${s.result_price||'—'}</td>
+      <td>${whoRight}</td>
+      <td><button class="btn btn-sm" onclick="openScorecardEdit(${s.id})">Edit</button> <button class="btn btn-sm btn-danger" onclick="deleteScorecard(${s.id})">✕</button></td>
+    </tr>`;
+  }).join('') : `<tr><td colspan="7" style="text-align:center;padding:30px;color:var(--text3);font-family:var(--mono);font-size:11px">NO SCORECARD ENTRIES YET — CALLS WILL APPEAR HERE AS YOU TRACK OUTCOMES</td></tr>`;
+
+  // Calculate scores
+  const garethCorrect = state.scorecard.filter(s=>s.who_correct==='gareth'||s.who_correct==='both').length;
+  const ttcCorrect = state.scorecard.filter(s=>s.who_correct==='ttc'||s.who_correct==='both').length;
+  const total = state.scorecard.filter(s=>s.who_correct&&s.who_correct!=='tbd').length;
+
+  return `<div class="card">
+    <div class="card-header" style="display:flex;align-items:center;justify-content:space-between">
+      <span class="card-title">// Analyst Scorecard — Who Called It Right?</span>
+      <button class="btn btn-sm btn-primary" onclick="openModal('scorecardModal');initScorecardForm()">＋ Log Outcome</button>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;padding:16px;border-bottom:1px solid var(--border)">
+      <div style="text-align:center">
+        <div style="font-family:var(--display);font-size:36px;color:var(--accent)">${total?Math.round(garethCorrect/total*100)+'%':'—'}</div>
+        <div style="font-family:var(--mono);font-size:10px;color:var(--text3);text-transform:uppercase">Gareth Accuracy</div>
+        <div style="font-family:var(--mono);font-size:10px;color:var(--text2)">${garethCorrect}/${total} calls</div>
+      </div>
+      <div style="text-align:center;border-left:1px solid var(--border);border-right:1px solid var(--border)">
+        <div style="font-family:var(--display);font-size:36px;color:var(--orange)">${total?Math.round(ttcCorrect/total*100)+'%':'—'}</div>
+        <div style="font-family:var(--mono);font-size:10px;color:var(--text3);text-transform:uppercase">TTC Accuracy</div>
+        <div style="font-family:var(--mono);font-size:10px;color:var(--text2)">${ttcCorrect}/${total} calls</div>
+      </div>
+      <div style="text-align:center">
+        <div style="font-family:var(--display);font-size:36px;color:var(--text2)">${state.scorecard.length}</div>
+        <div style="font-family:var(--mono);font-size:10px;color:var(--text3);text-transform:uppercase">Total Tracked</div>
+      </div>
+    </div>
+    <div style="overflow-x:auto">
+      <table style="width:100%;border-collapse:collapse;font-size:13px">
+        <thead>
+          <tr style="background:var(--bg3)">
+            <th style="font-family:var(--mono);font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--text3);padding:8px 12px;text-align:left">Ticker</th>
+            <th style="font-family:var(--mono);font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--text3);padding:8px 12px;text-align:left">Date</th>
+            <th style="font-family:var(--mono);font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--accent);padding:8px 12px;text-align:left">Gareth's Call</th>
+            <th style="font-family:var(--mono);font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--orange);padding:8px 12px;text-align:left">TTC Call</th>
+            <th style="font-family:var(--mono);font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--text3);padding:8px 12px;text-align:left">Outcome</th>
+            <th style="font-family:var(--mono);font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--text3);padding:8px 12px;text-align:left">Who Was Right</th>
+            <th style="padding:8px 12px"></th>
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>
+  </div>`;
+}
+
+function initScorecardForm() {
+  document.getElementById('scorecardForm').innerHTML = `
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Ticker</label>
+        <input type="text" class="form-input" id="scTicker" placeholder="AAPL" style="text-transform:uppercase">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Date of Call</label>
+        <input type="date" class="form-input" id="scDate">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Gareth's Call</label>
+        <input type="text" class="form-input" id="scGareth" placeholder="e.g. Long above $72K">
+      </div>
+      <div class="form-group">
+        <label class="form-label">TTC Call</label>
+        <input type="text" class="form-input" id="scTTC" placeholder="e.g. Bearish short-term">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Actual Result / Price Move</label>
+        <input type="text" class="form-input" id="scResult" placeholder="e.g. Dropped to $65K in 3 days">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Who Was Right?</label>
+        <select class="form-select" id="scWho">
+          <option value="tbd">TBD — Still Playing Out</option>
+          <option value="gareth">Gareth Was Right</option>
+          <option value="ttc">TTC Was Right</option>
+          <option value="both">Both Were Right</option>
+          <option value="neither">Neither Was Right</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Notes</label>
+      <textarea class="form-textarea" id="scNotes" placeholder="What happened, lessons learned..."></textarea>
+    </div>`;
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('scDate').value = today;
+}
+
+function openScorecardEdit(id) {
+  const entry = state.scorecard.find(s=>s.id===id);
+  if (!entry) return;
+  openModal('scorecardModal');
+  initScorecardForm();
+  document.getElementById('scTicker').value = entry.ticker||'';
+  document.getElementById('scDate').value = entry.date||'';
+  document.getElementById('scGareth').value = entry.gareth_call||'';
+  document.getElementById('scTTC').value = entry.ttc_call||'';
+  document.getElementById('scResult').value = entry.result_price||'';
+  document.getElementById('scWho').value = entry.who_correct||'tbd';
+  document.getElementById('scNotes').value = entry.notes||'';
+  // Store editing id
+  document.getElementById('scorecardForm').dataset.editId = id;
+}
+
+function saveScorecardEntry() {
+  const ticker = document.getElementById('scTicker')?.value.trim().toUpperCase();
+  if (!ticker) { alert('Enter a ticker.'); return; }
+  const editId = document.getElementById('scorecardForm').dataset.editId;
+  const entry = {
+    id: editId ? parseInt(editId) : Date.now(),
+    ticker,
+    date: document.getElementById('scDate').value,
+    gareth_call: document.getElementById('scGareth').value,
+    ttc_call: document.getElementById('scTTC').value,
+    result_price: document.getElementById('scResult').value,
+    who_correct: document.getElementById('scWho').value,
+    notes: document.getElementById('scNotes').value
+  };
+  if (editId) {
+    const idx = state.scorecard.findIndex(s=>s.id===parseInt(editId));
+    if (idx>=0) state.scorecard[idx] = entry; else state.scorecard.unshift(entry);
+  } else {
+    state.scorecard.unshift(entry);
+  }
+  saveState();
+  closeModal('scorecardModal');
+  generateCombinedIntelligence();
+}
+
+function deleteScorecard(id) {
+  state.scorecard = state.scorecard.filter(s=>s.id!==id);
+  saveState();
+  generateCombinedIntelligence();
+}
+
+// ═══════════════════════════════════════════════════════
+// CHARTS — TRADINGVIEW WIDGET
+// ═══════════════════════════════════════════════════════
+function loadChart() {
+  const raw = document.getElementById('chartTickerInput').value.trim().toUpperCase();
+  const interval = document.getElementById('chartInterval').value;
+  if (!raw) return;
+  embedChart(raw, interval);
+}
+
+function embedChart(ticker, interval) {
+  interval = interval || document.getElementById('chartInterval').value || 'D';
+  document.getElementById('chartTickerInput').value = ticker;
+  const container = document.getElementById('chartContainer');
+  container.innerHTML = '';
+  container.style.height = '600px';
+
+  const widget = document.createElement('div');
+  widget.className = 'tradingview-widget-container';
+  widget.style.height = '100%';
+  widget.innerHTML = `
+    <div id="tv_chart_${ticker}" style="height:100%"></div>
+    <div class="tradingview-widget-copyright" style="display:none"></div>`;
+  container.appendChild(widget);
+
+  const script = document.createElement('script');
+  script.src = 'https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js';
+  script.async = true;
+  script.innerHTML = JSON.stringify({
+    autosize: true,
+    symbol: ticker,
+    interval: interval,
+    timezone: "America/New_York",
+    theme: "dark",
+    style: "1",
+    locale: "en",
+    backgroundColor: "rgba(17,19,24,1)",
+    gridColor: "rgba(30,35,48,0.5)",
+    hide_top_toolbar: false,
+    hide_legend: false,
+    save_image: true,
+    calendar: false,
+    studies: ["STD;RSI","STD;MACD"],
+    support_host: "https://www.tradingview.com"
+  });
+  widget.appendChild(script);
+
+  // Show notes panel for this ticker from watchlist + chart log
+  renderChartNotesSidebar(ticker);
+  updateQuickTickers(ticker);
+}
+
+function renderChartNotesSidebar(ticker) {
+  const sidebar = document.getElementById('chartNotesSidebar');
+  const watchItem = state.watchlist.find(w=>w.ticker===ticker);
+  const chartEntries = state.chartLog.filter(c=>c.ticker===ticker);
+
+  const watchHtml = watchItem ? `
+    <div class="card">
+      <div class="card-header"><span class="card-title">// Watchlist — ${ticker}</span></div>
+      <div class="card-body">
+        <div class="watch-levels" style="margin-bottom:12px">
+          <div class="level-box entry"><div class="level-box-label">Entry</div><div class="level-box-value">${watchItem.entry||'—'}</div></div>
+          <div class="level-box stop"><div class="level-box-label">Stop</div><div class="level-box-value">${watchItem.stop||'—'}</div></div>
+          <div class="level-box target"><div class="level-box-label">Target</div><div class="level-box-value">${watchItem.target||'—'}</div></div>
+        </div>
+        ${watchItem.prob?`<div class="watch-prob"><span class="inline-label">Prob</span><div class="prob-bar"><div class="prob-fill ${watchItem.prob>=70?'high':watchItem.prob>=60?'med':'low'}" style="width:${watchItem.prob}%"></div></div><span class="prob-text">${watchItem.prob}%</span></div>`:''}
+        ${watchItem.pattern?`<div style="font-size:11px;color:var(--accent);font-family:var(--mono);margin:8px 0">${watchItem.pattern}</div>`:''}
+        ${watchItem.notes?`<div style="font-size:12px;color:var(--text2)">${watchItem.notes}</div>`:''}
+        ${watchItem.catalyst?`<div class="watch-catalyst" style="margin-top:8px">⚡ Catalyst: ${formatDate(watchItem.catalyst)}</div>`:''}
+      </div>
+    </div>` : `<div class="card"><div class="card-body"><div style="color:var(--text3);font-size:12px;font-family:var(--mono)">${ticker} not on watchlist. <button class="btn btn-sm btn-primary" onclick="document.getElementById('wTicker').value='${ticker}';openModal('watchModal')">＋ Add</button></div></div></div>`;
+
+  const logHtml = chartEntries.length ? `
+    <div class="card">
+      <div class="card-header"><span class="card-title">// Analysis Log — ${ticker}</span></div>
+      <div class="card-body" style="padding:12px 16px">
+        ${chartEntries.map(e=>`
+          <div style="padding:10px 0;border-bottom:1px solid var(--border)">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+              <span style="font-family:var(--mono);font-size:10px;color:var(--text3)">${formatDate(e.date)}</span>
+              <span style="font-family:var(--mono);font-size:9px;color:${e.prob>=70?'var(--green)':e.prob>=60?'var(--yellow)':'var(--red)'};font-weight:700">${e.prob}%</span>
+              <span style="font-family:var(--mono);font-size:9px;color:var(--text3)">${e.timeframe}</span>
+            </div>
+            <div style="margin-bottom:4px">${(e.patterns||'').split(',').map(p=>`<span class="pattern-tag">${p.trim()}</span>`).join('')}</div>
+            <div style="font-size:12px;color:var(--text2)">${e.notes}</div>
+          </div>`).join('')}
+      </div>
+    </div>` : `<div class="card"><div class="card-body"><div style="color:var(--text3);font-size:12px;font-family:var(--mono)">No chart logs for ${ticker}. <button class="btn btn-sm btn-primary" onclick="document.getElementById('cTicker').value='${ticker}';openModal('chartModal')">＋ Log Analysis</button></div></div></div>`;
+
+  sidebar.innerHTML = watchHtml + logHtml;
+}
+
+function updateQuickTickers(activeTicker) {
+  const tickers = [...new Set([...state.watchlist.map(w=>w.ticker), ...state.chartLog.map(c=>c.ticker)])].slice(0,12);
+  document.getElementById('quickTickers').innerHTML = tickers.map(t=>`
+    <button class="btn btn-sm ${t===activeTicker?'btn-primary':''}" onclick="embedChart('${t}')">${t}</button>`).join('');
+}
+
+// ═══════════════════════════════════════════════════════
+// METHODOLOGY REFERENCE
+// ═══════════════════════════════════════════════════════
+
+const DEFAULT_METHODOLOGY = {
+  coreRules: [
+    { rule: '2-Candle Confirmation', detail: 'Minimum 2 candles must CLOSE above/below a key level to confirm a breakout or breakdown. Each subsequent close must be above the previous close. One candle = potential fakeout, NOT confirmation. Applies to ALL timeframes.' },
+    { rule: '70-80% Probability Threshold', detail: 'Only trade when multiple confluences align: pattern completion + volume confirmation + RSI aligned + key support/resistance respected + no negative fundamental catalyst + aligned with macro bias. Below 70% = watch only, do not trade.' },
+    { rule: 'RSI Usage', detail: 'RSI is background context ONLY — not the primary signal. Only emphasized for: (1) bearish/bullish divergence, and (2) historically extreme readings (below 25 or above 75). RSI fast crossing above/below slow line used as supporting confluence.' },
+    { rule: 'Pattern Invalidation', detail: 'H&S or Inverse H&S: nullified if price closes back through the neckline. Any pattern: invalidated if price reclaims the broken level with 2 confirmed closes above/below.' },
+    { rule: 'Measured Moves', detail: 'H&S: distance from head to neckline projected from breakout point. Flags: flagpole length projected from breakout. Triangles: height at widest point projected from breakout. Double top/bottom: same principle.' },
+    { rule: 'Fibonacci Levels', detail: '61.8% = the golden ratio — most important retracement level. When price bounces off 61.8% + RSI oversold + volume confirmation = very high probability setup. Always draw Fib from major swing high to swing low (or vice versa).' },
+    { rule: 'Gap Fill Strategy', detail: 'Stocks frequently return to fill earnings gaps. Buy the gap fill when price returns to pre-gap level after a bullish earnings gap. The gap fill IS the entry — not a breakdown. Example: IONQ gap fill long.' },
+    { rule: 'Value Trap Warning Signs', detail: 'Looks cheap but keeps getting cheaper. Signs: fundamental deterioration ongoing, 30-year support broken on high volume, guidance cuts, secular headwinds (e.g. store brand competition). WAIT for 2 quarters of stabilization before considering.' },
+    { rule: 'Trendline Validity', detail: 'A trendline requires minimum 3 touch points to be considered valid. More touches = stronger level. Multi-decade trendlines (10yr, 30yr, 40yr) carry enormous weight when tested.' },
+    { rule: 'Workflow: Weekly → Daily → Hourly', detail: 'Step 1: Weekly chart — big picture supportive? Step 2: Daily chart — pattern, Fib, RSI, measured move. Step 3: 1hr chart — entry timing refinement. Never skip the weekly context.' },
+    { rule: 'BTC Key Level — Gareth (Original Call)', detail: 'Gareth first identified $37-38K as the BTC downside target if the macro bear flag plays out — PRIOR to Drew calling similar levels. Sub-$40K target is Gareth\'s original call. Needs daily close above $72-73K to invalidate bear case.' },
+  ],
+  screenerFilters: [
+    { filter: 'Exchange', value: 'NYSE or NASDAQ only', note: 'No OTC stocks — ever' },
+    { filter: 'Avg Volume', value: '500,000+ minimum', note: 'Ensures liquidity for clean entries/exits' },
+    { filter: 'Market Cap', value: '$500M+ minimum', note: 'Avoids manipulation risk of small caps' },
+    { filter: 'Relative Volume', value: '>1.5x average', note: 'Signals unusual activity worth investigating' },
+    { filter: 'RSI', value: 'Near 30 (oversold) or near 70 (overbought)', note: 'For counter-trend setups — context dependent' },
+    { filter: 'Price', value: '>$5 minimum', note: 'Avoid penny stock volatility' },
+    { filter: 'Tools Used', value: 'TradingView screener', note: 'Save filter preset for daily rapid scanning' },
+  ],
+  patterns: [
+    { pattern: 'Head & Shoulders (H&S)', type: 'Bearish Reversal', detail: 'Three peaks: left shoulder, higher head, right shoulder. Neckline connects the two lows. Target = head-to-neckline distance projected DOWN from neckline break. Invalidated if price closes back above neckline.' },
+    { pattern: 'Inverse H&S', type: 'Bullish Reversal', detail: 'Three troughs: left shoulder, lower head, right shoulder. Neckline connects the two highs. Target = head-to-neckline distance projected UP from neckline break. Needs 2 closes above neckline to confirm.' },
+    { pattern: 'Rounded Top', type: 'Bearish Reversal', detail: 'Slow, curved distribution pattern. Footprint of institutional smart money selling to retail buyers over time. More dangerous than V-top because it takes longer and traps more buyers. Currently forming on S&P 500.' },
+    { pattern: 'Bear Flag', type: 'Bearish Continuation', detail: 'Sharp decline (flagpole) followed by rising channel consolidation (flag). Measures: flagpole length projected DOWN from flag breakdown. Current BTC macro structure is a bear flag. Gold also in bear flag.' },
+    { pattern: 'Cup & Handle', type: 'Bullish Continuation', detail: 'Rounded bottom (cup) followed by small consolidation (handle). Breakout above handle resistance with volume = entry. Target = depth of cup projected up from breakout.' },
+    { pattern: 'Ascending Triangle', type: 'Bullish Continuation', detail: 'Flat resistance top + rising lows. Coiling into apex = imminent breakout. Target = height of triangle projected up from breakout. Currently watching TSLA at decision point.' },
+    { pattern: 'Double Top', type: 'Bearish Reversal', detail: 'Two peaks at same resistance. Neck = support between peaks. Target = peak-to-neck distance projected down. Higher probability when second top has lower volume than first.' },
+    { pattern: 'Parallel Channel', type: 'Trend Continuation', detail: 'Price oscillates between two parallel trendlines. Buy lower band, sell upper band in neutral trend. Break of lower band = bearish signal. Break of upper band = bullish breakout.' },
+    { pattern: 'Topping Tail (Bearish)', type: 'Single Candle Warning', detail: 'Long upper wick = sellers rejected higher prices aggressively. On weekly timeframe = very significant. Copper printed massive weekly topping tail (Jan 26 week). High volume topping tail = distribution.' },
+  ],
+  positionSizing: [
+    { rule: 'Never All-In at Entry', detail: 'Start with 25% of intended position size at initial entry. This protects capital if the setup moves against you immediately.' },
+    { rule: 'Scale-In on Confirmation', detail: 'Add 25% more if price drops 5-10% from entry. Continue scaling in 25% increments. Average cost comes down, increasing probability of profit when the trade works.' },
+    { rule: 'Max Pain Level', detail: 'Define your max pain BEFORE entering: 5-10% below your cost average. If price hits max pain, exit. No hope trades.' },
+    { rule: 'Wait for Full Pattern Completion', detail: 'Gareth enters when the pattern is FULLY played out and confirmed — not in anticipation. The 2-candle confirmation must be in place.' },
+    { rule: 'Risk/Reward Minimum', detail: 'Minimum 2:1 reward-to-risk ratio. If stop is $5 below entry, target must be $10+ above entry. Below 2:1 = skip the trade.' },
+    { rule: 'Position Limit Per Sector', detail: 'Avoid overconcentration. If already in a financial sector play, be cautious about adding another financial. Contagion risk is real (CPB → MKC → IFF).' },
+  ]
+};
+
+let currentEditSection = null;
+
+function toggleMethodologyDrawer() {
+  const drawer = document.getElementById('methodologyDrawer');
+  const backdrop = document.getElementById('methodologyBackdrop');
+  const isOpen = drawer.style.right === '0px';
+  drawer.style.right = isOpen ? '-680px' : '0px';
+  backdrop.style.display = isOpen ? 'none' : 'block';
+}
+
+function renderMethodology() {
+  const m = state.methodology || DEFAULT_METHODOLOGY;
+
+  const coreEl = document.getElementById('drawerCoreRules');
+  if (coreEl) coreEl.innerHTML = m.coreRules.map(r => `
+    <div style="padding:10px 12px;border:1px solid var(--border);border-radius:6px;margin-bottom:8px;background:var(--bg3)">
+      <div style="font-family:var(--mono);font-size:11px;font-weight:700;color:var(--accent);margin-bottom:4px">${r.rule}</div>
+      <div style="font-size:12px;color:var(--text2);line-height:1.6">${r.detail}</div>
+    </div>`).join('');
+
+  const screenEl = document.getElementById('drawerScreener');
+  if (screenEl) screenEl.innerHTML = m.screenerFilters.map(f => `
+    <div style="display:grid;grid-template-columns:140px 1fr;border-bottom:1px solid var(--border);align-items:start">
+      <div style="padding:8px 10px;font-family:var(--mono);font-size:10px;font-weight:700;color:var(--green)">${f.filter}</div>
+      <div style="padding:8px 10px">
+        <div style="font-size:12px;color:var(--text)">${f.value}</div>
+        <div style="font-size:11px;color:var(--text3);margin-top:2px">${f.note}</div>
+      </div>
+    </div>`).join('');
+
+  const posEl = document.getElementById('drawerPositionSizing');
+  if (posEl) posEl.innerHTML = m.positionSizing.map(r => `
+    <div style="padding:10px 12px;border:1px solid var(--border);border-radius:6px;margin-bottom:8px;background:var(--bg3)">
+      <div style="font-family:var(--mono);font-size:11px;font-weight:700;color:var(--red);margin-bottom:4px">${r.rule}</div>
+      <div style="font-size:12px;color:var(--text2);line-height:1.6">${r.detail}</div>
+    </div>`).join('');
+
+  const patEl = document.getElementById('drawerPatterns');
+  if (patEl) patEl.innerHTML = m.patterns.map(p => {
+    const typeColor = p.type.includes('Bearish') ? 'var(--red)' : p.type.includes('Bullish') ? 'var(--green)' : 'var(--yellow)';
+    return `<div style="padding:10px 12px;border:1px solid var(--border);border-radius:6px;margin-bottom:8px;background:var(--bg3)">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+        <span style="font-family:var(--mono);font-size:11px;font-weight:700;color:var(--orange)">${p.pattern}</span>
+        <span style="font-family:var(--mono);font-size:9px;color:${typeColor};background:rgba(0,0,0,0.3);padding:1px 6px;border-radius:3px">${p.type}</span>
+      </div>
+      <div style="font-size:12px;color:var(--text2);line-height:1.6">${p.detail}</div>
+    </div>`;
+  }).join('');
+
+  renderCustomNotes();
+}
+
+function renderCustomNotes() {
+  const notes = state.customNotes || [];
+  const el = document.getElementById('drawerCustomNotes');
+  if (!el) return;
+  if (!notes.length) {
+    el.innerHTML = '<div style="color:var(--text3);font-size:12px;font-family:var(--mono)">No custom notes yet — click + Add Note above.</div>';
+    return;
+  }
+  const catColors = { observation:'var(--accent)', rule:'var(--green)', mistake:'var(--red)', gareth:'var(--yellow)', drew:'var(--orange)' };
+  const catLabels = { observation:'OBSERVATION', rule:'NEW RULE', mistake:'AVOID', gareth:'GARETH', drew:'DREW' };
+  el.innerHTML = notes.map(n => `
+    <div style="padding:10px 12px;border:1px solid var(--border);border-radius:6px;margin-bottom:8px;background:var(--bg3)">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="font-family:var(--mono);font-size:9px;color:${catColors[n.category]||'var(--text3)'};text-transform:uppercase;background:rgba(0,0,0,0.3);padding:1px 6px;border-radius:3px">${catLabels[n.category]||n.category}</span>
+          <span style="font-family:var(--mono);font-size:11px;font-weight:700;color:var(--text)">${n.title}</span>
+        </div>
+        <button class="btn btn-sm btn-danger" style="padding:2px 7px;font-size:10px" onclick="deleteNote(${n.id})">✕</button>
+      </div>
+      <div style="font-size:12px;color:var(--text2);line-height:1.5">${n.detail}</div>
+      <div style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-top:5px">${formatDate(n.date)}</div>
+    </div>`).join('');
+}
+
+function saveCustomNote() {
+  const title = document.getElementById('ruleTitle').value.trim();
+  if (!title) { alert('Please enter a title.'); return; }
+  if (!state.customNotes) state.customNotes = [];
+  state.customNotes.unshift({
+    id: Date.now(),
+    category: document.getElementById('ruleCategory').value,
+    title,
+    detail: document.getElementById('ruleDetail').value,
+    date: document.getElementById('ruleDate').value || new Date().toISOString().split('T')[0]
+  });
+  saveState();
+  renderCustomNotes();
+  closeModal('addRuleModal');
+  ['ruleTitle','ruleDetail'].forEach(id => document.getElementById(id).value = '');
+}
+
+function deleteNote(id) {
+  state.customNotes = (state.customNotes || []).filter(n => n.id !== id);
+  saveState();
+  renderCustomNotes();
+}
+
+function openEditSection(section) {
+  currentEditSection = section;
+  const m = state.methodology || DEFAULT_METHODOLOGY;
+  const titles = { coreRules:'Core Rules', screenerFilters:'Screener Filters', patterns:'Pattern Library', positionSizing:'Position Sizing' };
+  document.getElementById('editSectionTitle').textContent = `// Edit — ${titles[section]}`;
+  document.getElementById('editSectionContent').value = JSON.stringify(m[section], null, 2);
+  openModal('editSectionModal');
+}
+
+function saveEditedSection() {
+  try {
+    const parsed = JSON.parse(document.getElementById('editSectionContent').value);
+    if (!state.methodology) state.methodology = JSON.parse(JSON.stringify(DEFAULT_METHODOLOGY));
+    state.methodology[currentEditSection] = parsed;
+    saveState();
+    renderMethodology();
+    closeModal('editSectionModal');
+  } catch(e) {
+    alert('Invalid JSON — please check your formatting and try again.');
+  }
+}
+
+function copyConversationStarter() {
+  const m = state.methodology || DEFAULT_METHODOLOGY;
+  const notes = (state.customNotes || []).map(n => `- [${n.category.toUpperCase()}] ${n.title}: ${n.detail}`).join('\n');
+  const watchlist = state.watchlist.filter(w => w.status !== 'closed' && w.status !== 'pass')
+    .map(w => `  • ${w.ticker} | Status: ${w.status} | Entry: ${w.entry} | Stop: ${w.stop} | Target: ${w.target} | Prob: ${w.prob}% | ${w.notes||''}`).join('\n');
+
+  const starter = `=== G-POP TRADE — SESSION CONTEXT ===
+Please read this fully before analyzing any charts. This is my personal trading system based on Gareth Soloway's methodology from VerifiedInvesting.com.
+
+--- CORE RULES ---
+${m.coreRules.map(r => `• ${r.rule}: ${r.detail}`).join('\n')}
+
+--- STOCK SCREENER FILTERS ---
+${m.screenerFilters.map(f => `• ${f.filter}: ${f.value} — ${f.note}`).join('\n')}
+
+--- POSITION SIZING ---
+${m.positionSizing.map(r => `• ${r.rule}: ${r.detail}`).join('\n')}
+
+--- PATTERN LIBRARY (for reference) ---
+${m.patterns.map(p => `• ${p.pattern} (${p.type}): ${p.detail}`).join('\n')}
+
+${notes ? `--- MY PERSONAL NOTES & OBSERVATIONS ---\n${notes}` : ''}
+
+${watchlist ? `--- CURRENT ACTIVE WATCHLIST ---\n${watchlist}` : ''}
+
+--- YOUR ROLE ---
+You are my chart analysis partner. When I submit a chart image or ticker:
+1. Identify patterns using the methodology above
+2. Check for 70%+ probability confluences
+3. Give me entry zone, stop level, and measured move target
+4. Flag any fundamental concerns
+5. Give a clear probability rating and PASS/WATCHLIST/TRADE verdict
+6. If a setup is below 70%, tell me what needs to happen for it to qualify
+7. Always remind me of the 2-candle confirmation rule before entry
+
+Never trade narratives. Charts only. Let's begin.
+=== END SESSION CONTEXT ===`;
+
+  navigator.clipboard.writeText(starter).then(() => {
+    const toast = document.getElementById('copyToast');
+    toast.style.opacity = '1';
+    setTimeout(() => { toast.style.opacity = '0'; }, 3000);
+  }).catch(() => {
+    alert('Copy failed — please manually select and copy from the text below:\n\n' + starter);
+  });
+}
+
+// ═══════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════
+function loadSampleData() {
+  // Only load sample data if state is empty
+  if (state.gamePlans.length || state.watchlist.length || state.chartLog.length) return;
+
+  // GAME PLAN — Mar 13 2026 (most recent first)
+  state.gamePlans = [
+  {
+    id: 1741824000000,
+    date: '2026-03-13',
+    macro_bias: 'bearish',
+    bias_reason: 'GDP revised to 0.7% (from 1.5%), rounded top complete on S&P, oil/equity inverse correlation dominating, massive weekend geopolitical risk with Hormuz closure.',
+    summary: 'Q4 2025 GDP revised sharply down to 0.7% — market spinning as good news (rate cuts) but PCE data is backward-looking, collected before oil shock. S&P rounded top at upper parallel channel resistance now essentially complete — targets 5,700 then 5,500-5,600. Oil at $93.85 with dangerous weekend risk (last Sunday $90 → $120 overnight). Private credit + $40T debt trajectory threatening bond market with 30-year yield near 52-week highs. Bitcoin bullishly breaking out — trendline refined, inside bar forming, $74K is the key close needed. Gold bear flag flush coming next week to $4,865. Silver $70-71 critical — break opens trap door to $50-54.',
+    key_levels: [
+      { ticker: 'SPX', price: '5700', type: 'support', note: 'Near-term pullback target — rounded top complete' },
+      { ticker: 'SPX', price: '5500-5600', type: 'support', note: 'Ultimate downside — ascending trendline' },
+      { ticker: 'OIL', price: '93.85', type: 'watch', note: 'Inverse SPY signal — oil up = SPY down' },
+      { ticker: 'BTC', price: '74000', type: 'resistance', note: 'Close above opens $80-85K target' },
+      { ticker: 'ADBE', price: '238', type: 'support', note: 'Gap fill — day trade only' },
+      { ticker: 'ADBE', price: '206', type: 'support', note: 'Major pivot low — swing trade trigger' },
+      { ticker: 'ULTA', price: '533.75', type: 'support', note: 'Gap fill — day trade level' },
+      { ticker: 'ULTA', price: '500', type: 'support', note: 'Psychological — swing trade trigger' },
+      { ticker: 'S', price: '12.40', type: 'support', note: 'Pivot low — day trade bounce only, NOT swing' },
+      { ticker: 'GOLD', price: '4865', type: 'support', note: 'Bear flag flush target — expect early next week' },
+      { ticker: 'GOLD', price: '5400', type: 'resistance', note: 'Invalidation level — close above = ATH retest' },
+      { ticker: 'SILVER', price: '70-71', type: 'support', note: 'CRITICAL — break opens trap door to $50-54' }
+    ],
+    specific_setups: [
+      { ticker: 'ADBE', direction: 'long', entry: '$238', target: 'Intraday bounce', stop: 'Below $235', note: 'Day trade ONLY — gap fill bounce. Broke COVID crash lows. Swing trade requires $206 major pivot.' },
+      { ticker: 'ULTA', direction: 'long', entry: '$533.75', target: 'Intraday bounce', stop: 'Below $530', note: 'Day trade gap fill. Down 7% on lighter volume — constructive. Swing only below $500.' },
+      { ticker: 'S', direction: 'long', entry: '$12.40', target: 'Intraday bounce', stop: 'Below $12.20', note: 'Day trade pivot low bounce ONLY. Descending trendline still intact — not a swing setup yet.' },
+      { ticker: 'BTC', direction: 'long', entry: 'Current ~$72-73K', target: '$80,000-85,000', stop: 'Below trendline retest', note: 'Bullish trendline breakout likely triggered. Inside bar = quiet accumulation. Need close above $74K to confirm.' }
+    ],
+    macro_risks: [
+      'Weekend oil shock risk — Hormuz closure, last week $90→$120 overnight',
+      'PCE data backward-looking — collected before oil spike, inflation reality worse than reported',
+      'US debt crossing $39T → $40T in months — Iran war expenditures accelerating',
+      '30-year bond yield near 52-week highs — bond vigilantes demanding premium',
+      'Private credit structural crisis — institutional money under immense pressure',
+      'Oil above $100 will push inflation above 5% — kills rate cut narrative',
+      'S&P rounded top complete — institutional distribution to retail buyers ongoing'
+    ],
+    key_quote: 'Logic and charts beat hype and narratives every time.',
+    article: '[Gareth Soloway - My Trading Game Plan - Mar 13, 2026]'
+  },
+  {
+    id: 1741737600000,
+    date: '2026-03-12',
+    macro_bias: 'bearish',
+    bias_reason: 'S&P rounded top forming, private credit black swan developing, institutional distribution underway.',
+    summary: 'Gareth identifies a potential black swan in private credit markets as funds begin limiting withdrawals. Deutsche Bank has $30B exposure with the stock dropping sharply. The S&P 500 has broken a critical trendline and is forming a rounded top — a pattern of institutional distribution. Oil is heading toward $100 on geopolitical tensions before an eventual decline to $68 on demand destruction. Bitcoin needs a confirmed daily close above $72,000 to validate a bull breakout.',
+    key_levels: [
+      { ticker: 'SPX', price: '6550', type: 'support', note: 'Next major battleground if trendline break holds' },
+      { ticker: 'BTC', price: '72000', type: 'watch', note: 'Daily close needed to confirm bull breakout' },
+      { ticker: 'DB', price: '27.85', type: 'target', note: 'Gap fill — day trade level' },
+      { ticker: 'DB', price: '25.25', type: 'target', note: 'Higher probability swing trade level' },
+      { ticker: 'OIL', price: '100', type: 'resistance', note: 'Technical target before reversal to $68' },
+      { ticker: 'DGX', price: '109.67', type: 'support', note: 'Gap fill — high probability swing level' }
+    ],
+    specific_setups: [
+      { ticker: 'IONQ', direction: 'long', entry: 'Gap fill level', target: 'Pre-gap price', stop: 'Below gap', note: 'Textbook gap fill long — stock bled back to pre-earnings gap level' },
+      { ticker: 'VLO', direction: 'short', entry: 'Trendline resistance', target: 'Below trendline', stop: 'Above trendline', note: 'Oil running up into multi-point trendline resistance while overbought' },
+      { ticker: 'DB', direction: 'long', entry: '$25.25', target: '$29-31', stop: '$22', note: 'Swing trade level after private credit selloff. Start 25% position.' }
+    ],
+    macro_risks: [
+      'Private credit funds limiting withdrawals — liquidity mismatch developing',
+      'Deutsche Bank $30B private credit exposure — contagion risk',
+      'S&P 500 rounded top = institutional distribution to retail buyers',
+      'Oil at $93 driving inflation expectations higher — Fed rate cuts unlikely',
+      'War debt causing 30-year yield spike — dangerous feedback loop',
+      'JPMorgan marking down private credit loans — spreading to sector'
+    ],
+    key_quote: 'The chart is the only thing I care about. That\'s it, the chart. Everything else is noise to me.',
+    article: '[Gareth Soloway - My Trading Game Plan - Mar 12, 2026]'
+  }];
+
+  // WATCHLIST
+  state.watchlist = [
+    {
+      id: 1, ticker: 'IFF', status: 'forming',
+      prob: 70, entry: '$65-69', stop: '$63', target: '$75-78',
+      pattern: '40-year trendline support, daily RSI bouncing off 30',
+      catalyst: '2026-03-13',
+      notes: 'Sector contagion from CPB — not company-specific collapse. Business intact. Diversified food/pharma/personal care. Watch for 2 confirmed daily closes above $70-71.',
+      checks: 4, date: '2026-03-11'
+    },
+    {
+      id: 2, ticker: 'MKC', status: 'watching',
+      prob: 65, entry: '$58-60', stop: '$57', target: '$65-66',
+      pattern: 'Multi-year $59-60 support zone tested multiple times since 2019',
+      catalyst: '',
+      notes: 'McCormick caught in CPB sector contagion. Stronger moat than CPB — spices/flavorings harder to replicate. Below average weekly volume. Need 2 confirmed closes above $61.',
+      checks: 3, date: '2026-03-11'
+    },
+    {
+      id: 3, ticker: 'BNTX', status: 'watching',
+      prob: 65, entry: '$82-86', stop: '$79', target: '$97-100',
+      pattern: 'Historic oversold RSI (23), capitulation volume 10x average, $82-85 support zone',
+      catalyst: '',
+      notes: 'Founder departure (Ugur Sahin + Ozlem Tureci leaving for startup) — emotional overreaction not business collapse. Evercore ISI calls it a buying opportunity. Business and pipeline intact. Watch for stabilization + RSI fast crossing above slow.',
+      checks: 3, date: '2026-03-10'
+    },
+    {
+      id: 4, ticker: 'DB', status: 'watching',
+      prob: 60, entry: '$25.25', stop: '$22', target: '$29-31',
+      pattern: 'Gareth specific swing level — daily ascending trendline broken',
+      catalyst: '',
+      notes: 'Private credit exposure $30B. JPMorgan marking down loans. Gareth day trade at $27.85 gap fill, swing trade at $25.25. Start 25% position per his method. HIGH RISK given macro environment.',
+      checks: 2, date: '2026-03-12'
+    },
+    {
+      id: 5, ticker: 'CNC', status: 'watching',
+      prob: 45, entry: 'Wait for base', stop: 'Below $34', target: '$40-42',
+      pattern: 'Oversold at prior support ~$36 — but earnings disaster',
+      catalyst: '2026-04-06',
+      notes: 'WAIT for April 6 CMS rate decision. ACA enrollment collapsing 5.5M→3.5M. Medicare Advantage still losing money. CEO language cautious. Not a trade until catalyst resolves favorably.',
+      checks: 1, date: '2026-03-10'
+    },
+    {
+      id: 6, ticker: 'GFS', status: 'watching',
+      prob: 58, entry: '$39-42', stop: '$38.50', target: '$47-48',
+      pattern: 'Orange ascending trendline + $41-42 horizontal confluence',
+      catalyst: '2026-03-17',
+      notes: 'Secondary offering of 20M shares creating supply overhang. Wait 3-5 days for offering to digest. Concurrent $300M buyback is positive but smaller than offering. Revisit after offering closes.',
+      checks: 2, date: '2026-03-12'
+    },
+    {
+      id: 7, ticker: 'CPB', status: 'pass',
+      prob: 30, entry: '—', stop: '—', target: '$20-21',
+      pattern: '30-year support BROKEN — classic value trap',
+      catalyst: '',
+      notes: 'AVOID. 30-year range support broken on 3x volume. ACA snack sales structural decline. Store brand competition secular headwind. Down 60% and still deteriorating fundamentals. Wait for 2 quarters of stabilization.',
+      checks: 0, date: '2026-03-11'
+    },
+    {
+      id: 8, ticker: 'ARES', status: 'pass',
+      prob: 20, entry: '—', stop: '—', target: '—',
+      pattern: 'Private credit epicenter — business model threatened',
+      catalyst: '',
+      notes: 'DO NOT TRADE LONG. Down 42% YTD. This IS the private credit black swan Gareth warned about. JPMorgan marking down loans directly hits Ares core business. 2x volume institutional selling. Avoid until crisis resolves.',
+      checks: 0, date: '2026-03-12'
+    },
+    {
+      id: 9, ticker: 'S', status: 'watching',
+      prob: 63, entry: '$14.50-15.00', stop: '$12.25', target: '$19.50-20.00',
+      pattern: '3-year blue box support floor ($13.50-15.00), descending yellow trendline resistance overhead, fresh daily RsiLE +2 cross',
+      catalyst: '',
+      notes: 'Sitting at absolute bottom of 3-year consolidation range on elevated weekly volume. Business solid — $1B ARR growing 22% YoY, hit operating profitability. Q1 2027 EPS guidance miss ($0.01-0.02 vs $0.05 expected) caused the recent drop — expectations reset not business collapse. Mar 13 UPDATE: Gareth called $12.40 pivot low as day trade bounce level — if it flushes there first it could set up a better swing entry. BELOW 70% threshold — need 2 daily closes above descending yellow trendline (~$14.50-15.00) to confirm swing entry. Check Monday weekly close.',
+      checks: 3, date: '2026-03-13'
+    }
+  ];
+
+  // CHART LOG
+  state.chartLog = [
+    { id: 101, ticker: 'BTC', date: '2026-03-13', timeframe: 'Daily', patterns: 'Bullish trendline breakout (refined), Inside bar accumulation, $74K resistance', prob: 72, verdict: 'watchlist', notes: 'UPGRADED Mar 13 — Gareth refined trendline connecting high-to-high pivots, confirmed bullish breakout likely triggered. Inside bar = quiet bull accumulation. Need confirmed close above $74K to open $80-85K. Sentiment fully inverted from $127K highs (uber-bull) to uber-bear at lows — classic setup.' },
+    { id: 117, ticker: 'ADBE', date: '2026-03-13', timeframe: 'Daily', patterns: 'Broke COVID crash lows, Gap fill $238, Secondary gap $235, Swing target $206', prob: 40, verdict: 'pass', notes: 'HISTORIC BREAKDOWN — mega-cap tech breaking below COVID crash lows signals massive institutional sentiment shift. From $640 in Feb 2024 to $248 today. DAY TRADE ONLY at $238 gap fill ($235 secondary). Swing trade requires waiting for $206 major pivot lows. Do not swing trade until $206. Gareth methodology: gap fill = intraday bounce, not position trade.' },
+    { id: 118, ticker: 'ULTA', date: '2026-03-13', timeframe: 'Daily', patterns: 'Post-earnings -7%, Gap fill $533.75, Psychological support $500', prob: 55, verdict: 'watchlist', notes: 'Down 7% on LIGHTER than average volume — constructive sign, not panic institutional selling. Gap fill at $533.75 = day trade level. Swing trade only if flushes below $500 psychological. Worth watching — volume on the selloff was not alarming.' },
+    { id: 102, ticker: 'MSTR', date: '2026-03-11', timeframe: 'Daily', patterns: 'Descending channel, Single green candle at resistance (unconfirmed)', prob: 55, verdict: 'watchlist', notes: 'Heavily BTC-correlated. One green candle above resistance — not confirmed per 2-candle rule. Watch BTC $72K level first.' },
+    { id: 103, ticker: 'TSLA', date: '2026-03-10', timeframe: 'Daily', patterns: 'Multi-year rising channel, Ascending triangle coiling, Decision point', prob: 50, verdict: 'watchlist', notes: 'Triangle apex imminent. Watch $430 resistance break (bull) vs yellow trendline break (bear). RSI weak at 42. Channel intact long term.' },
+    { id: 104, ticker: 'OXY', date: '2026-03-10', timeframe: 'Daily', patterns: 'Ascending channel, Blue rising wedge breakout then pullback, RsiSE triggered', prob: 55, verdict: 'watchlist', notes: 'Strong breakout to $56 then -3.45% pullback on elevated volume. RsiSE fired. Watch $52 support. $46 major support below.' },
+    { id: 105, ticker: 'WOLF', date: '2026-03-10', timeframe: 'Daily', patterns: 'Potential Inverted H&S (unconfirmed), $16 yellow support', prob: 55, verdict: 'watchlist', notes: 'H&S not clean enough yet. Left shoulder choppy. Head was sharp V-spike. RSI fast below slow. Need clean close above $18 neckline for confirmation.' },
+    { id: 106, ticker: 'ORCL', date: '2026-03-10', timeframe: 'Daily', patterns: 'Blow-off top, Full mean reversion, $109-119 support zone target', prob: 35, verdict: 'pass', notes: 'Nearly double average volume on down day — institutional distribution. RSI not oversold yet. Wait for $109-119 major support zone before considering long.' },
+    { id: 107, ticker: 'TTD', date: '2026-03-10', timeframe: 'Daily', patterns: 'Historic -80% decline, Broken $32-35 support, RsiLE triggered', prob: 50, verdict: 'pass', notes: 'Historic oversold but 80% drawdown suggests fundamental re-rating. Bounce possible but bounces in broken stocks get sold. Need to understand why it fell.' },
+    { id: 108, ticker: 'MMM', date: '2026-03-10', timeframe: 'Daily', patterns: 'Multi-year recovery, $160 resistance test, RsiSE fired', prob: 60, verdict: 'watchlist', notes: 'Genuine recovery from 2020-2023 downtrend. At major multi-year resistance $160. Fresh RsiSE + RSI bearish cross. Pullback to $144-145 before next attempt.' },
+    { id: 109, ticker: 'AMCR', date: '2026-03-12', timeframe: 'Daily', patterns: 'Long-term ascending trendline support, $40 horizontal confluence', prob: 62, verdict: 'watchlist', notes: '$1.5B debt refinancing news. Goldman/JPMorgan underwrote = confidence. Proactive liquidity management. Trendline + horizontal confluence at $40. Below threshold given macro.' },
+    { id: 110, ticker: 'IFF', date: '2026-03-11', timeframe: 'Weekly', patterns: '40-year ascending trendline, Double support at $65, Sector contagion not company collapse', prob: 70, verdict: 'watchlist', notes: 'Most technically compelling of consumer stocks. 40-yr trendline + $65 double hold. Revenue beat 2.9% despite EPS miss. Daily RSI fast bouncing off 30. Near 70% threshold.' },
+    { id: 111, ticker: 'CNC', date: '2026-03-10', timeframe: 'Daily', patterns: 'Oversold at support, Earnings gap down -15.97%', prob: 45, verdict: 'avoid', notes: 'ACA enrollment 5.5M→3.5M collapse. Medicare Advantage losing money through 2026. WAIT for April 6 CMS rate decision before any consideration.' },
+    { id: 112, ticker: 'BNTX', date: '2026-03-10', timeframe: 'Weekly', patterns: 'Weekly gap down through $100 support, Capitulation volume 10x avg', prob: 65, verdict: 'watchlist', notes: 'Founder departure emotional selloff. Weekly gap down through major support changes picture — $100-110 now resistance. Bounce trade only, not position trade.' },
+    { id: 113, ticker: 'ARES', date: '2026-03-12', timeframe: 'Daily', patterns: 'Private credit epicenter, 49.9% below 52-week high, 2x volume selling', prob: 20, verdict: 'avoid', notes: 'DO NOT TRADE. Ground zero of Gareth black swan event. JPMorgan marking down private credit loans. Business model directly threatened. Down 42% YTD and accelerating.' },
+    { id: 114, ticker: 'CPB', date: '2026-03-11', timeframe: 'Monthly', patterns: '30-YEAR SUPPORT BROKEN, Generational breakdown, 3x volume', prob: 25, verdict: 'avoid', notes: 'Classic value trap. 30-year range $35-85 violated. Snacks structural decline vs PepsiCo/store brands. Guidance cut. EPS $2.15-2.25. Need 2 quarters stabilization minimum.' },
+    { id: 115, ticker: 'S', date: '2026-03-13', timeframe: 'Weekly', patterns: '3-year blue box support floor, Bottom rail test at $13.50, Elevated volume 38.75M', prob: 63, verdict: 'watchlist', notes: 'Weekly: 3-yr consolidation box floor being tested. Stock down 90%+ from $130 highs. Not broken fundamentally — $1B ARR growing 22%, first operating profit. RsiSE fired at top in 2021. Weekly RSI fast 41.86 crossing above slow 38.38.' },
+    { id: 116, ticker: 'S', date: '2026-03-13', timeframe: 'Daily', patterns: 'Descending yellow trendline resistance, Blue box bottom rail, Fresh RsiLE +2 cross, Prior low $12.50', prob: 63, verdict: 'watchlist', notes: 'Daily: Descended yellow trendline from mid-2025 highs acting as resistance directly overhead. Price broke below box briefly to $12.50 then bounced back inside. RSI fast 51.90 crossing above slow 50.21 — fresh RsiLE +2 signal. NEED 2 daily closes above yellow trendline (~$14.50-15) to confirm. Entry $14.50-15, Stop $12.25, T1 $19.50-20, T2 $27.50-28.' }
+  ];
+
+  saveState();
+}
+
+async function init() {
+  const today = new Date().toLocaleDateString('en-US', { weekday:'short', month:'short', day:'numeric' });
+  document.getElementById('headerDate').textContent = today;
+
+  await loadState();
+  loadSampleData();
+
+  if (state.gamePlans.length) renderGamePlan(state.gamePlans[0]);
+  if (state.ttcShows.length) renderTTC(state.ttcShows[0]);
+  renderWatchlist();
+  renderChartLog();
+  renderTradeJournal();
+  renderMethodology();
+  updateQuickTickers('');
+}
+
+init();
+</script>
+</body>
+</html>
