@@ -1,7 +1,6 @@
 [build]
-  base = "gpop-trade"
-  publish = "gpop-trade"
-  functions = "gpop-trade/netlify/functions"
+  publish = "."
+  functions = "netlify/functions"
 
 [[headers]]
   for = "/*"
