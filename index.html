@@ -95,8 +95,11 @@
     gap: 2px;
     padding: 12px 24px 0;
     border-bottom: 1px solid var(--border);
-    position: relative;
-    z-index: 1;
+    position: sticky;
+    top: 56px;
+    z-index: 99;
+    background: rgba(26,24,20,0.98);
+    backdrop-filter: blur(20px);
     overflow-x: auto;
     scrollbar-width: none;
   }
@@ -601,6 +604,13 @@
   .pnl-neutral { color: var(--text2); font-family: var(--mono); font-size: 12px; }
 
   /* MOBILE RESPONSIVE */
+  /* INTELLIGENCE 3-COL → 1-COL on mobile */
+  @media (max-width: 960px) {
+    #tab-combined > div[style*="grid-template-columns:1fr 1fr 1fr"] {
+      grid-template-columns: 1fr !important;
+    }
+  }
+
   @media (max-width: 768px) {
     .header { padding: 0 12px; height: 52px; }
     .logo { font-size: 22px; letter-spacing: 2px; }
@@ -1039,7 +1049,7 @@
 
 <header class="header">
   <div>
-    <div class="logo">G-Pop Trade<span>// Soloway Method</span></div>
+    <div class="logo">G-Pop Trade<span>// Trade Desk</span></div>
   </div>
   <div class="header-right">
     <div class="market-pill" id="headerBias">— BIAS</div>
@@ -1085,12 +1095,9 @@
 </header>
 
 <nav class="nav">
-  <div class="nav-tab active" onclick="switchTab('gameplan')">📋 Game Plan</div>
-  <div class="nav-tab" onclick="switchTab('ttc')">📈 Trading the Close</div>
-  <div class="nav-tab" onclick="switchTab('combined')">⚡ Intelligence</div>
+  <div class="nav-tab active" onclick="switchTab('combined')">⚡ Intelligence</div>
   <div class="nav-tab" onclick="switchTab('charts')">🖥 Charts</div>
   <div class="nav-tab" onclick="switchTab('watchlist')">👁 Watchlist <span class="badge" id="watchBadge">0</span></div>
-  <div class="nav-tab" onclick="switchTab('chartlog')">📊 Chart Log <span class="badge" id="logBadge">0</span></div>
   <div class="nav-tab" onclick="switchTab('journal')">💼 Trade Journal</div>
 </nav>
 
@@ -1229,105 +1236,123 @@
 <main class="main">
 
   <!-- ═══════════════════ GAME PLAN TAB ═══════════════════ -->
-  <div class="tab-content active" id="tab-gameplan">
-    <div class="section-header">
-      <div class="section-title">DAILY GAME PLAN</div>
-      <div style="display:flex;gap:8px;">
-        <button class="btn btn-primary" onclick="openModal('gamePlanModal')">＋ New Game Plan</button>
+  <!-- ═══════════════════ INTELLIGENCE TAB ═══════════════════ -->
+  <div class="tab-content active" id="tab-combined">
+
+    <!-- 3-column input panels -->
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:16px">
+
+      <!-- Panel 1: Game Plan -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">// 📋 Game Plan</span>
+          <button class="btn btn-sm" onclick="openVerifiedInvesting('gameplan')">🔗 Live Recap</button>
+        </div>
+        <div class="card-body">
+          <div class="form-group">
+            <label class="form-label">Date</label>
+            <input type="date" class="form-input" id="gpDate">
+          </div>
+          <div class="form-group">
+            <textarea class="form-textarea" id="gpArticle" style="min-height:130px" placeholder="Paste the Game Plan transcript here..."></textarea>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Bias Override</label>
+            <select class="form-select" id="gpBias">
+              <option value="">— AI Determines —</option>
+              <option value="bearish">Bearish</option>
+              <option value="neutral">Neutral</option>
+              <option value="bullish">Bullish</option>
+            </select>
+          </div>
+          <button class="btn btn-primary" style="width:100%" onclick="processGamePlan()">⚡ Process with AI</button>
+        </div>
+      </div>
+
+      <!-- Panel 2: Trading the Close -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">// 📈 Trading the Close</span>
+          <button class="btn btn-sm" onclick="openVerifiedInvesting('ttc')">🔗 Live Recap</button>
+        </div>
+        <div class="card-body">
+          <div class="form-group">
+            <label class="form-label">Date</label>
+            <input type="date" class="form-input" id="ttcDate">
+          </div>
+          <div class="form-group">
+            <input type="text" class="form-input" id="ttcHost" placeholder="Host name (optional)" style="margin-bottom:8px">
+            <textarea class="form-textarea" id="ttcArticle" style="min-height:100px" placeholder="Paste Trading the Close transcript here..."></textarea>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Bias Override</label>
+            <select class="form-select" id="ttcBias">
+              <option value="">— AI Determines —</option>
+              <option value="bearish">Bearish</option>
+              <option value="neutral">Neutral</option>
+              <option value="bullish">Bullish</option>
+            </select>
+          </div>
+          <button class="btn btn-primary" style="width:100%" onclick="processTTC()">⚡ Process with AI</button>
+        </div>
+      </div>
+
+      <!-- Panel 3: Additional Info -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">// 📝 Additional Info</span>
+        </div>
+        <div class="card-body">
+          <div class="form-group">
+            <label class="form-label">Source / Label</label>
+            <input type="text" class="form-input" id="addlLabel" placeholder="e.g. News, Macro Data, Earnings...">
+          </div>
+          <div class="form-group">
+            <textarea class="form-textarea" id="addlArticle" style="min-height:150px" placeholder="Paste any additional information for AI analysis..."></textarea>
+          </div>
+          <button class="btn btn-primary" style="width:100%;margin-top:8px" onclick="processAdditional()">⚡ Analyze with AI</button>
+        </div>
       </div>
     </div>
 
-    <div id="gamePlanDisplay">
-      <div class="empty-state">
-        <div class="empty-state-icon">📋</div>
-        <h3>No Game Plan Yet</h3>
-        <p>Paste Gareth's daily "My Trading Game Plan" article<br>and Claude will extract the key insights automatically.</p>
-        <br>
-        <button class="btn btn-primary" onclick="openModal('gamePlanModal')">＋ Add Today's Game Plan</button>
+    <!-- AI Results Row -->
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:24px">
+      <div id="gamePlanDisplay">
+        <div class="card"><div class="card-body"><div class="empty-state" style="padding:24px"><div class="empty-state-icon" style="font-size:28px;margin-bottom:8px;opacity:0.3">📋</div><p style="font-size:12px">Game Plan AI results</p></div></div></div>
+      </div>
+      <div id="ttcDisplay">
+        <div class="card"><div class="card-body"><div class="empty-state" style="padding:24px"><div class="empty-state-icon" style="font-size:28px;margin-bottom:8px;opacity:0.3">📈</div><p style="font-size:12px">TTC AI results</p></div></div></div>
+      </div>
+      <div id="addlDisplay">
+        <div class="card"><div class="card-body"><div class="empty-state" style="padding:24px"><div class="empty-state-icon" style="font-size:28px;margin-bottom:8px;opacity:0.3">📝</div><p style="font-size:12px">Additional info results</p></div></div></div>
       </div>
     </div>
-  </div>
 
-  <!-- ═══════════════════ TRADING THE CLOSE TAB ═══════════════════ -->
-  <div class="tab-content" id="tab-ttc">
+    <!-- Overall Analysis -->
     <div class="section-header">
-      <div class="section-title">TRADING THE CLOSE</div>
-      <button class="btn btn-primary" onclick="openModal('ttcModal')">＋ Add Today's Show</button>
-    </div>
-    <div id="ttcDisplay">
-      <div class="empty-state">
-        <div class="empty-state-icon">📈</div>
-        <h3>No Show Notes Yet</h3>
-        <p>Paste the Trading the Close show notes or article<br>and Claude will extract setups and key levels automatically.</p>
-        <br>
-        <button class="btn btn-primary" onclick="openModal('ttcModal')">＋ Add Today's Show</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- ═══════════════════ COMBINED INTELLIGENCE TAB ═══════════════════ -->
-  <div class="tab-content" id="tab-combined">
-    <div class="section-header">
-      <div class="section-title">COMBINED INTELLIGENCE</div>
-      <button class="btn btn-primary" onclick="generateCombinedIntelligence()">⚡ Generate Analysis</button>
+      <div class="section-title">OVERALL ANALYSIS</div>
+      <button class="btn btn-primary" onclick="generateCombinedIntelligence()">⚡ Generate Overall Analysis</button>
     </div>
     <div id="combinedDisplay">
       <div class="empty-state">
         <div class="empty-state-icon">⚡</div>
-        <h3>Add Both Shows First</h3>
-        <p>Once you've added both Gareth's Game Plan and Trading the Close,<br>click Generate Analysis to see where they agree, conflict, and combined signals.</p>
+        <h3>Ready to Analyze</h3>
+        <p>Process at least one show above, then click Generate Overall Analysis<br>to see consensus, conflicts, and highest-conviction setups.</p>
       </div>
     </div>
 
-    <!-- ── VERIFIED INVESTOR INSIGHTS ── -->
-    <div style="margin-top:28px">
-      <div class="section-header" style="margin-bottom:16px">
-        <div class="section-title">VERIFIED INVESTOR INSIGHTS</div>
-        <span style="font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:1px">CURATED RESEARCH &amp; ANALYSIS</span>
+    <!-- Daily Log -->
+    <div style="margin-top:32px">
+      <div class="section-header">
+        <div class="section-title">DAILY LOG</div>
+        <span style="font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:1px">LAST 14 TRADING DAYS — AUTO-ROTATES</span>
       </div>
-      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px" id="insightsGrid">
-        <!-- Gareth Soloway / Verified Investing -->
-        <a href="https://www.verifiedinvesting.com" target="_blank" rel="noopener" class="insight-card">
-          <div class="insight-badge" style="background:rgba(99,179,237,0.15);color:#63b3ed">VERIFIED INVESTING</div>
-          <div class="insight-title">Gareth Soloway — Live Market Analysis</div>
-          <div class="insight-meta">VerifiedInvesting.com · Daily</div>
-          <div class="insight-desc">Real-time chart breakdowns, game plans, and trade setups using the Soloway Method. Primary source for this journal.</div>
-        </a>
-        <!-- Howard Marks -->
-        <a href="https://www.oaktreecapital.com/insights/howard-marks-memos" target="_blank" rel="noopener" class="insight-card">
-          <div class="insight-badge" style="background:rgba(72,187,120,0.15);color:#48bb78">MACRO MEMO</div>
-          <div class="insight-title">Howard Marks Memos on Markets &amp; Risk</div>
-          <div class="insight-meta">Oaktree Capital · Periodic</div>
-          <div class="insight-desc">Deep thinking on market cycles, risk, and investor psychology from one of the world's most respected money managers.</div>
-        </a>
-        <!-- Warren Buffett -->
-        <a href="https://www.berkshirehathaway.com/letters/letters.html" target="_blank" rel="noopener" class="insight-card">
-          <div class="insight-badge" style="background:rgba(237,137,54,0.15);color:#ed8936">INVESTOR LETTER</div>
-          <div class="insight-title">Warren Buffett's Annual Shareholder Letter</div>
-          <div class="insight-meta">Berkshire Hathaway · Annually</div>
-          <div class="insight-desc">Timeless principles on business valuation, capital allocation, and long-term investing from the Oracle of Omaha.</div>
-        </a>
-        <!-- ARK Big Ideas -->
-        <a href="https://ark-invest.com/big-ideas/" target="_blank" rel="noopener" class="insight-card">
-          <div class="insight-badge" style="background:rgba(159,122,234,0.15);color:#9f7aea">RESEARCH</div>
-          <div class="insight-title">ARK Invest Big Ideas Report</div>
-          <div class="insight-meta">ARK Invest · Annual</div>
-          <div class="insight-desc">Disruptive innovation thesis and sector projections across AI, genomics, robotics, and blockchain.</div>
-        </a>
-        <!-- Ray Dalio -->
-        <a href="https://www.linkedin.com/in/raydalio/" target="_blank" rel="noopener" class="insight-card">
-          <div class="insight-badge" style="background:rgba(99,179,237,0.15);color:#63b3ed">MACRO VIEW</div>
-          <div class="insight-title">Ray Dalio — Principles for Navigating Markets</div>
-          <div class="insight-meta">LinkedIn / Bridgewater · Periodic</div>
-          <div class="insight-desc">Framework for understanding debt cycles, economic machines, and the "new world order" macro shifts.</div>
-        </a>
-        <!-- Seeking Alpha -->
-        <a href="https://seekingalpha.com/" target="_blank" rel="noopener" class="insight-card">
-          <div class="insight-badge" style="background:rgba(72,187,120,0.15);color:#48bb78">ANALYSIS</div>
-          <div class="insight-title">Seeking Alpha — Crowd-Sourced Stock Analysis</div>
-          <div class="insight-meta">Seeking Alpha · Daily</div>
-          <div class="insight-desc">Earnings deep-dives, sector rotation ideas, and quant ratings across thousands of equities and ETFs.</div>
-        </a>
+      <div id="dailyLogDisplay">
+        <div class="empty-state">
+          <div class="empty-state-icon">📅</div>
+          <h3>No Log Entries Yet</h3>
+          <p>Each time you run Overall Analysis, the result is saved here.<br>Entries rotate automatically after 14 trading days.</p>
+        </div>
       </div>
     </div>
   </div>
@@ -1359,37 +1384,31 @@
     </div>
   </div>
 
-  <!-- ═══════════════════ WATCHLIST TAB ═══════════════════ -->
+  <!-- ═══════════════════ WATCHLIST TAB (combined) ═══════════════════ -->
   <div class="tab-content" id="tab-watchlist">
     <div class="section-header">
       <div class="section-title">WATCHLIST</div>
-      <button class="btn btn-primary" onclick="openModal('watchModal')">＋ Add to Watchlist</button>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+        <div style="display:flex;border:1px solid var(--border2);border-radius:4px;overflow:hidden">
+          <button class="btn btn-sm btn-primary" id="toggleStocks" onclick="setWatchFilter('stocks')" style="border-radius:0;border:none;border-right:1px solid var(--border2)">📊 Stocks</button>
+          <button class="btn btn-sm" id="toggleCrypto" onclick="setWatchFilter('crypto')" style="border-radius:0;border:none">₿ Crypto</button>
+        </div>
+        <button class="btn btn-sm" onclick="openModal('chartModal')">＋ Log Analysis</button>
+        <button class="btn btn-primary" onclick="openModal('watchModal')">＋ Add to Watchlist</button>
+      </div>
     </div>
-
     <div class="watchlist-grid" id="watchlistGrid">
       <div class="empty-state" style="grid-column:1/-1">
         <div class="empty-state-icon">👁</div>
         <h3>Watchlist Empty</h3>
-        <p>Add tickers from your screener to track setups,<br>key levels, and catalyst dates.</p>
+        <p>Add tickers to track setups, key levels, and catalyst dates.</p>
       </div>
     </div>
-  </div>
 
-  <!-- ═══════════════════ CHART LOG TAB ═══════════════════ -->
-  <div class="tab-content" id="tab-chartlog">
-    <div class="section-header">
-      <div class="section-title">CHART ANALYSIS LOG</div>
-      <button class="btn btn-primary" onclick="openModal('chartModal')">＋ Log Analysis</button>
-    </div>
-
-    <div class="card">
-      <div id="chartLogBody">
-        <div class="empty-state">
-          <div class="empty-state-icon">📊</div>
-          <h3>No Charts Logged</h3>
-          <p>Log your chart analyses with patterns, probability ratings,<br>and notes to build your trading record.</p>
-        </div>
-      </div>
+    <!-- Standalone chart log entries (no watchlist card) -->
+    <div id="standaloneLogSection" style="margin-top:24px;display:none">
+      <div style="font-family:var(--mono);font-size:11px;color:var(--text3);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px">// Chart Analyses (Not on Watchlist)</div>
+      <div class="card"><div id="standaloneLogBody"></div></div>
     </div>
   </div>
 
@@ -1451,8 +1470,8 @@
           <option value="observation">Personal Observation</option>
           <option value="rule">New Rule Learned</option>
           <option value="mistake">Mistake to Avoid</option>
-          <option value="gareth">Gareth Quote / Lesson</option>
-          <option value="drew">Drew Quote / Lesson</option>
+          <option value="gameplan">Game Plan Lesson</option>
+          <option value="ttc">Trading the Close Lesson</option>
         </select>
       </div>
       <div class="form-group">
@@ -1543,6 +1562,13 @@
         <div class="form-group">
           <label class="form-label">Ticker</label>
           <input type="text" class="form-input" id="wTicker" placeholder="AAPL" style="text-transform:uppercase">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Asset Type</label>
+          <select class="form-select" id="wAssetType">
+            <option value="stock">Stock</option>
+            <option value="crypto">Crypto</option>
+          </select>
         </div>
         <div class="form-group">
           <label class="form-label">Status</label>
@@ -1792,11 +1818,14 @@
 const state = {
   gamePlans: [],
   ttcShows: [],
+  additionalInfo: [],
+  dailyLog: [],
   scorecard: [],
   watchlist: [],
   chartLog: [],
   trades: []
 };
+let watchFilter = 'stocks';
 
 // ═══════════════════════════════════════════════════════
 // STORAGE (using window.storage API)
@@ -1882,20 +1911,18 @@ async function processGamePlan() {
 
   if (!article) { alert('Please paste the article text first.'); return; }
 
-  closeModal('gamePlanModal');
-
   document.getElementById('gamePlanDisplay').innerHTML = `
     <div class="card">
       <div class="card-body">
         <div class="ai-loading">
           <div class="spinner"></div>
-          <span>Analyzing Gareth's Game Plan with AI...</span>
+          <span>Analyzing Game Plan with AI...</span>
         </div>
       </div>
     </div>`;
 
   try {
-    const systemPrompt = `You are a trading analysis assistant specialized in Gareth Soloway's technical analysis methodology. Extract structured data from his "My Trading Game Plan" articles. Return ONLY valid JSON, no markdown, no explanation.`;
+    const systemPrompt = `You are a trading analysis assistant specializing in technical analysis. Extract structured data from "My Trading Game Plan" show transcripts. Return ONLY valid JSON, no markdown, no explanation.`;
 
     const prompt = `Extract the following from this trading article and return as JSON:
 {
@@ -2038,6 +2065,7 @@ function saveWatchItem() {
   const item = {
     id: Date.now(),
     ticker,
+    assetType: document.getElementById('wAssetType').value || 'stock',
     status: document.getElementById('wStatus').value,
     prob: parseInt(document.getElementById('wProb').value) || 0,
     entry: document.getElementById('wEntry').value,
@@ -2077,54 +2105,102 @@ function renderWatchlist() {
   const active = state.watchlist.filter(w => w.status !== 'closed' && w.status !== 'pass');
   badge.textContent = active.length;
 
-  if (!state.watchlist.length) {
+  // Filter by asset type (default stocks; crypto items without assetType treated as stock)
+  const filtered = state.watchlist.filter(item => {
+    const t = (item.assetType || 'stock').toLowerCase();
+    if (watchFilter === 'crypto') return t === 'crypto';
+    return t !== 'crypto';
+  });
+
+  if (!filtered.length) {
     grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1">
-      <div class="empty-state-icon">👁</div>
-      <h3>Watchlist Empty</h3>
-      <p>Add tickers from your screener to track setups,<br>key levels, and catalyst dates.</p>
+      <div class="empty-state-icon">${watchFilter==='crypto'?'₿':'📊'}</div>
+      <h3>${watchFilter==='crypto'?'No Crypto Entries':'Watchlist Empty'}</h3>
+      <p>${watchFilter==='crypto'?'Add crypto assets using the + Add to Watchlist button above.':'Add tickers to track setups, key levels, and catalyst dates.'}</p>
     </div>`;
-    return;
+  } else {
+    grid.innerHTML = filtered.map(item => {
+      const probClass = item.prob >= 70 ? 'high' : item.prob >= 60 ? 'med' : 'low';
+      const catalystHtml = item.catalyst ? `<div class="watch-catalyst">⚡ Catalyst: ${formatDate(item.catalyst)}</div>` : '';
+      const chartEntries = state.chartLog.filter(c => c.ticker === item.ticker);
+      const logHtml = chartEntries.length ? `
+        <div style="margin-top:10px;border-top:1px solid var(--border);padding-top:10px">
+          <div style="font-family:var(--mono);font-size:9px;color:var(--text3);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px">Chart Analysis History</div>
+          ${chartEntries.slice(0,2).map(e=>`
+            <div style="padding:6px 0;border-bottom:1px solid var(--border)">
+              <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">
+                <span style="font-family:var(--mono);font-size:9px;color:var(--text3)">${formatDate(e.date)}</span>
+                <span style="font-family:var(--mono);font-size:9px;color:var(--text3)">${e.timeframe}</span>
+                <span style="font-family:var(--mono);font-size:9px;color:${e.prob>=70?'var(--green)':e.prob>=60?'var(--yellow)':'var(--red)'};font-weight:700">${e.prob}%</span>
+                <span class="watch-status status-${e.verdict==='trade'?'confirmed':e.verdict==='watchlist'?'watching':e.verdict==='pass'?'pass':'forming'}" style="font-size:8px;padding:1px 5px">${e.verdict}</span>
+              </div>
+              <div style="font-size:11px;color:var(--text2);line-height:1.4">${e.notes?.substring(0,100)}${e.notes?.length>100?'…':''}</div>
+            </div>`).join('')}
+          ${chartEntries.length>2?`<div style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-top:4px">+${chartEntries.length-2} more entries</div>`:''}
+        </div>` : '';
+
+      return `<div class="watch-card">
+        <div class="watch-card-header">
+          <div style="display:flex;align-items:center;gap:8px">
+            <div class="watch-ticker">${item.ticker}</div>
+            ${item.assetType==='crypto'?`<span style="font-family:var(--mono);font-size:9px;padding:1px 5px;background:rgba(255,211,42,0.1);color:var(--yellow);border-radius:3px;border:1px solid rgba(255,211,42,0.2)">₿</span>`:''}
+          </div>
+          <div class="watch-status status-${item.status}">${item.status}</div>
+        </div>
+        <div class="watch-card-body">
+          <div class="watch-levels">
+            <div class="level-box entry"><div class="level-box-label">Entry</div><div class="level-box-value">${item.entry||'—'}</div></div>
+            <div class="level-box stop"><div class="level-box-label">Stop</div><div class="level-box-value">${item.stop||'—'}</div></div>
+            <div class="level-box target"><div class="level-box-label">Target</div><div class="level-box-value">${item.target||'—'}</div></div>
+          </div>
+          ${item.prob?`<div class="watch-prob"><span class="inline-label">Prob</span><div class="prob-bar"><div class="prob-fill ${probClass}" style="width:${item.prob}%"></div></div><span class="prob-text">${item.prob}%</span></div>`:''}
+          ${item.pattern?`<div style="font-size:11px;color:var(--accent);font-family:var(--mono);margin-bottom:8px">${item.pattern}</div>`:''}
+          ${catalystHtml}
+          ${item.notes?`<div class="watch-notes">${item.notes}</div>`:''}
+          ${item.checks?`<div style="font-size:11px;color:var(--text3);font-family:var(--mono);margin-bottom:8px">✓ ${item.checks}/6 confirmations</div>`:''}
+          <div class="watch-actions">
+            <select class="form-select" style="font-size:10px;padding:4px 6px;height:auto;flex:1" onchange="updateWatchStatus(${item.id}, this.value)">
+              <option value="watching" ${item.status==='watching'?'selected':''}>Watching</option>
+              <option value="forming" ${item.status==='forming'?'selected':''}>Forming</option>
+              <option value="confirmed" ${item.status==='confirmed'?'selected':''}>Confirmed</option>
+              <option value="active" ${item.status==='active'?'selected':''}>Active</option>
+              <option value="pass" ${item.status==='pass'?'selected':''}>Pass</option>
+              <option value="closed" ${item.status==='closed'?'selected':''}>Closed</option>
+            </select>
+            <button class="btn btn-sm" onclick="document.getElementById('cTicker').value='${item.ticker}';openModal('chartModal')">+ Log</button>
+            <button class="btn btn-sm btn-danger" onclick="removeWatchItem(${item.id})">✕</button>
+          </div>
+          ${logHtml}
+          <div class="watch-date">Added ${formatDate(item.date)}</div>
+        </div>
+      </div>`;
+    }).join('');
   }
 
-  grid.innerHTML = state.watchlist.map(item => {
-    const probClass = item.prob >= 70 ? 'high' : item.prob >= 60 ? 'med' : 'low';
-    const catalystHtml = item.catalyst ? `<div class="watch-catalyst">⚡ Catalyst: ${formatDate(item.catalyst)}</div>` : '';
-
-    return `<div class="watch-card">
-      <div class="watch-card-header">
-        <div class="watch-ticker">${item.ticker}</div>
-        <div class="watch-status status-${item.status}">${item.status}</div>
-      </div>
-      <div class="watch-card-body">
-        <div class="watch-levels">
-          <div class="level-box entry"><div class="level-box-label">Entry</div><div class="level-box-value">${item.entry || '—'}</div></div>
-          <div class="level-box stop"><div class="level-box-label">Stop</div><div class="level-box-value">${item.stop || '—'}</div></div>
-          <div class="level-box target"><div class="level-box-label">Target</div><div class="level-box-value">${item.target || '—'}</div></div>
-        </div>
-        ${item.prob ? `<div class="watch-prob">
-          <span class="inline-label">Prob</span>
-          <div class="prob-bar"><div class="prob-fill ${probClass}" style="width:${item.prob}%"></div></div>
-          <span class="prob-text">${item.prob}%</span>
-        </div>` : ''}
-        ${item.pattern ? `<div style="font-size:11px;color:var(--accent);font-family:var(--mono);margin-bottom:8px">${item.pattern}</div>` : ''}
-        ${catalystHtml}
-        ${item.notes ? `<div class="watch-notes">${item.notes}</div>` : ''}
-        ${item.checks ? `<div style="font-size:11px;color:var(--text3);font-family:var(--mono);margin-bottom:8px">✓ ${item.checks}/6 confirmations</div>` : ''}
-        <div class="watch-actions">
-          <select class="form-select" style="font-size:10px;padding:4px 6px;height:auto;flex:1" onchange="updateWatchStatus(${item.id}, this.value)">
-            <option value="watching" ${item.status==='watching'?'selected':''}>Watching</option>
-            <option value="forming" ${item.status==='forming'?'selected':''}>Forming</option>
-            <option value="confirmed" ${item.status==='confirmed'?'selected':''}>Confirmed</option>
-            <option value="active" ${item.status==='active'?'selected':''}>Active</option>
-            <option value="pass" ${item.status==='pass'?'selected':''}>Pass</option>
-            <option value="closed" ${item.status==='closed'?'selected':''}>Closed</option>
-          </select>
-          <button class="btn btn-sm btn-danger" onclick="removeWatchItem(${item.id})">✕</button>
-        </div>
-        <div class="watch-date">Added ${formatDate(item.date)}</div>
-      </div>
-    </div>`;
-  }).join('');
+  // Standalone log entries (ticker not on watchlist)
+  const watchedTickers = new Set(state.watchlist.map(w => w.ticker));
+  const standalone = state.chartLog.filter(c => !watchedTickers.has(c.ticker));
+  const standaloneSection = document.getElementById('standaloneLogSection');
+  const standaloneBody = document.getElementById('standaloneLogBody');
+  if (standaloneSection && standaloneBody) {
+    if (standalone.length) {
+      standaloneSection.style.display = 'block';
+      standaloneBody.innerHTML = `<table class="chart-log-table"><thead><tr>
+        <th>Ticker</th><th>Date</th><th>Timeframe</th><th>Patterns</th><th>Prob</th><th>Verdict</th><th>Notes</th><th></th>
+      </tr></thead><tbody>${standalone.map(e=>`<tr>
+        <td class="ticker-cell">${e.ticker}</td>
+        <td style="font-family:var(--mono);font-size:11px;color:var(--text2)">${formatDate(e.date)}</td>
+        <td style="font-family:var(--mono);font-size:11px;color:var(--text3)">${e.timeframe}</td>
+        <td>${(e.patterns||'').split(',').map(p=>`<span class="pattern-tag">${p.trim()}</span>`).join('')}</td>
+        <td style="font-family:var(--mono);font-size:12px;color:${e.prob>=70?'var(--green)':e.prob>=60?'var(--yellow)':'var(--red)'};font-weight:700">${e.prob}%</td>
+        <td><span class="watch-status status-${e.verdict==='trade'?'confirmed':e.verdict==='watchlist'?'watching':e.verdict==='pass'?'pass':'forming'}">${e.verdict}</span></td>
+        <td style="font-size:12px;color:var(--text2);max-width:260px">${e.notes}</td>
+        <td><button class="btn btn-sm btn-danger" onclick="removeChartEntry(${e.id})">✕</button></td>
+      </tr>`).join('')}</tbody></table>`;
+    } else {
+      standaloneSection.style.display = 'none';
+    }
+  }
 }
 
 // ═══════════════════════════════════════════════════════
@@ -2147,7 +2223,7 @@ function saveChartLog() {
 
   state.chartLog.unshift(entry);
   saveState();
-  renderChartLog();
+  renderWatchlist();
   closeModal('chartModal');
   ['cTicker','cPatterns','cNotes'].forEach(id => document.getElementById(id).value = '');
   document.getElementById('cProb').value = '';
@@ -2156,13 +2232,12 @@ function saveChartLog() {
 function removeChartEntry(id) {
   state.chartLog = state.chartLog.filter(c => c.id !== id);
   saveState();
-  renderChartLog();
+  renderWatchlist();
 }
 
 function renderChartLog() {
   const body = document.getElementById('chartLogBody');
-  const badge = document.getElementById('logBadge');
-  badge.textContent = state.chartLog.length;
+  if (!body) return;
 
   if (!state.chartLog.length) {
     body.innerHTML = `<div class="empty-state">
@@ -2282,6 +2357,143 @@ function renderTradeJournal() {
 }
 
 // ═══════════════════════════════════════════════════════
+// VERIFIED INVESTING LINKS
+// ═══════════════════════════════════════════════════════
+function openVerifiedInvesting(type) {
+  const today = new Date();
+  const month = today.toLocaleString('en-US', { month: 'long' }).toLowerCase();
+  const day = today.getDate();
+  const year = today.getFullYear();
+  const dateSlug = `${month}-${day}-${year}`;
+  const base = 'https://www.verifiedinvesting.com/blog/live-show-recap/';
+  const url = type === 'gameplan'
+    ? `${base}my-trading-game-plan-revealed-${dateSlug}/`
+    : `${base}trading-the-close-market-recap-${dateSlug}/`;
+  window.open(url, '_blank');
+}
+
+// ═══════════════════════════════════════════════════════
+// ADDITIONAL INFO
+// ═══════════════════════════════════════════════════════
+async function processAdditional() {
+  const label = document.getElementById('addlLabel').value.trim() || 'Additional Info';
+  const article = document.getElementById('addlArticle').value.trim();
+  if (!article) { alert('Please paste some content first.'); return; }
+  document.getElementById('addlDisplay').innerHTML = `<div class="card"><div class="card-body"><div class="ai-loading"><div class="spinner"></div><span>Analyzing with AI...</span></div></div></div>`;
+  try {
+    const systemPrompt = `You are a trading analysis assistant. Extract key trading insights from the provided content. Return ONLY valid JSON, no markdown.`;
+    const prompt = `Analyze this trading information and return JSON:
+{
+  "summary": "3-4 sentence summary of key trading insights",
+  "macro_bias": "bearish|neutral|bullish",
+  "key_tickers": [{"ticker":"","direction":"long|short|watch","note":""}],
+  "key_risks": ["risk1","risk2"],
+  "key_opportunities": ["opp1","opp2"]
+}
+Content:\n${article}`;
+    const raw = await callClaude(prompt, systemPrompt);
+    let extracted;
+    try { extracted = JSON.parse(raw.replace(/```json|```/g,'').trim()); }
+    catch(e) { extracted = { summary: raw, macro_bias: 'neutral', key_tickers: [], key_risks: [], key_opportunities: [] }; }
+    const info = { id: Date.now(), label, article, date: new Date().toISOString().split('T')[0], ...extracted };
+    state.additionalInfo.unshift(info);
+    await saveState();
+    renderAdditional(info);
+  } catch(e) {
+    document.getElementById('addlDisplay').innerHTML = `<div class="card"><div class="card-body"><div style="color:var(--red);font-family:var(--mono);font-size:12px;">Error analyzing. Try again.</div></div></div>`;
+  }
+}
+
+function renderAdditional(info) {
+  const biasColor = info.macro_bias === 'bearish' ? 'var(--red)' : info.macro_bias === 'bullish' ? 'var(--green)' : 'var(--yellow)';
+  const tickersHtml = (info.key_tickers||[]).map(t=>`
+    <div style="display:flex;gap:8px;align-items:center;padding:5px 0;border-bottom:1px solid var(--border)">
+      <span style="font-family:var(--display);font-size:18px">${t.ticker}</span>
+      <span class="watch-status status-${t.direction==='long'?'confirmed':t.direction==='short'?'pass':'watching'}">${t.direction}</span>
+      <span style="font-size:11px;color:var(--text2)">${t.note||''}</span>
+    </div>`).join('');
+  document.getElementById('addlDisplay').innerHTML = `
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">// ${info.label}</span>
+        <span style="font-family:var(--mono);font-size:11px;font-weight:700;color:${biasColor};text-transform:uppercase">${info.macro_bias}</span>
+      </div>
+      <div class="card-body">
+        <div class="ai-summary-box" style="margin-bottom:12px">${info.summary}</div>
+        ${tickersHtml ? `<div style="font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px">Key Tickers</div>${tickersHtml}` : ''}
+        ${(info.key_opportunities||[]).length ? `<div style="margin-top:10px;font-family:var(--mono);font-size:10px;color:var(--green);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px">Opportunities</div>${info.key_opportunities.map(o=>`<div style="font-size:12px;color:var(--text2);padding:3px 0">▸ ${o}</div>`).join('')}` : ''}
+      </div>
+    </div>`;
+}
+
+// ═══════════════════════════════════════════════════════
+// DAILY LOG
+// ═══════════════════════════════════════════════════════
+function saveDailyLog(data, gp, ttc, addl) {
+  if (!data) return;
+  const today = new Date().toISOString().split('T')[0];
+  state.dailyLog = (state.dailyLog || []).filter(l => l.date !== today);
+  state.dailyLog.unshift({
+    date: today,
+    gp_bias: gp?.macro_bias || null,
+    ttc_bias: ttc?.macro_bias || null,
+    addl_label: addl?.label || null,
+    consensus: data.overall_consensus || 'neutral',
+    consensus_strength: data.consensus_strength || 'moderate',
+    consensus_note: data.consensus_note || '',
+    top_picks: data.top_3_highest_conviction || [],
+    avoid: data.tickers_to_avoid || []
+  });
+  state.dailyLog = state.dailyLog.slice(0, 14);
+  saveState();
+}
+
+function renderDailyLog() {
+  const el = document.getElementById('dailyLogDisplay');
+  if (!el) return;
+  if (!state.dailyLog || !state.dailyLog.length) {
+    el.innerHTML = `<div class="empty-state"><div class="empty-state-icon">📅</div><h3>No Log Entries Yet</h3><p>Each time you run Overall Analysis, the result is saved here.<br>Entries rotate automatically after 14 trading days.</p></div>`;
+    return;
+  }
+  const consensusColor = c => c==='bullish'?'var(--green)':c==='bearish'?'var(--red)':c==='conflicted'?'var(--orange)':'var(--yellow)';
+  el.innerHTML = `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px">
+    ${state.dailyLog.map(log=>`
+      <div class="card">
+        <div class="card-header" style="padding:12px 16px">
+          <span style="font-family:var(--mono);font-size:11px;font-weight:700;color:var(--text)">${formatDate(log.date)}</span>
+          <span style="font-family:var(--mono);font-size:11px;font-weight:700;color:${consensusColor(log.consensus)};text-transform:uppercase">${log.consensus}</span>
+        </div>
+        <div class="card-body" style="padding:12px 16px">
+          <div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap">
+            ${log.gp_bias?`<span style="font-family:var(--mono);font-size:9px;padding:2px 7px;border-radius:3px;background:rgba(245,197,66,0.1);color:var(--accent);border:1px solid rgba(245,197,66,0.2)">GP: ${log.gp_bias}</span>`:''}
+            ${log.ttc_bias?`<span style="font-family:var(--mono);font-size:9px;padding:2px 7px;border-radius:3px;background:rgba(255,107,53,0.1);color:var(--orange);border:1px solid rgba(255,107,53,0.2)">TTC: ${log.ttc_bias}</span>`:''}
+            ${log.addl_label?`<span style="font-family:var(--mono);font-size:9px;padding:2px 7px;border-radius:3px;background:rgba(0,230,118,0.1);color:var(--green);border:1px solid rgba(0,230,118,0.2)">${log.addl_label}</span>`:''}
+          </div>
+          ${log.consensus_note?`<div style="font-size:12px;color:var(--text2);line-height:1.5;margin-bottom:10px">${log.consensus_note}</div>`:''}
+          ${log.top_picks?.length?`<div style="font-family:var(--mono);font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Top Picks</div><div style="display:flex;gap:8px;flex-wrap:wrap">${log.top_picks.map(t=>`<span style="font-family:var(--display);font-size:16px;color:var(--green)">${t.ticker}</span>`).join('')}</div>`:''}
+          ${log.avoid?.length?`<div style="font-family:var(--mono);font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-top:8px;margin-bottom:4px">Avoid</div><div style="display:flex;gap:8px;flex-wrap:wrap">${log.avoid.map(t=>`<span style="font-family:var(--display);font-size:16px;color:var(--red)">${t.ticker}</span>`).join('')}</div>`:''}
+        </div>
+      </div>`).join('')}
+  </div>`;
+}
+
+// ═══════════════════════════════════════════════════════
+// WATCHLIST FILTER (stocks / crypto)
+// ═══════════════════════════════════════════════════════
+function setWatchFilter(type) {
+  watchFilter = type;
+  const btnStocks = document.getElementById('toggleStocks');
+  const btnCrypto = document.getElementById('toggleCrypto');
+  if (btnStocks && btnCrypto) {
+    btnStocks.className = `btn btn-sm${type==='stocks'?' btn-primary':''}`;
+    btnCrypto.className = `btn btn-sm${type==='crypto'?' btn-primary':''}`;
+    btnStocks.style.cssText = 'border-radius:0;border:none;border-right:1px solid var(--border2)';
+    btnCrypto.style.cssText = 'border-radius:0;border:none';
+  }
+  renderWatchlist();
+}
+
+// ═══════════════════════════════════════════════════════
 // UTILS
 // ═══════════════════════════════════════════════════════
 function formatDate(dateStr) {
@@ -2299,7 +2511,6 @@ async function processTTC() {
   const host = document.getElementById('ttcHost').value.trim();
   const biasPick = document.getElementById('ttcBias').value;
   if (!article) { alert('Please paste the show notes first.'); return; }
-  closeModal('ttcModal');
   document.getElementById('ttcDisplay').innerHTML = `<div class="card"><div class="card-body"><div class="ai-loading"><div class="spinner"></div><span>Analyzing Trading the Close with AI...</span></div></div></div>`;
   try {
     const systemPrompt = `You are a trading analysis assistant. Extract structured data from Trading the Close show notes. Return ONLY valid JSON.`;
@@ -2393,43 +2604,39 @@ function renderTTC(show) {
 async function generateCombinedIntelligence() {
   const gp = state.gamePlans[0];
   const ttc = state.ttcShows[0];
-  if (!gp && !ttc) { alert('Add at least one show first.'); return; }
+  const addl = state.additionalInfo[0];
+  if (!gp && !ttc && !addl) { alert('Process at least one input first.'); return; }
 
-  // Switch to combined tab
-  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
-  document.getElementById('tab-combined').classList.add('active');
-  document.querySelectorAll('.nav-tab')[2].classList.add('active');
-
-  document.getElementById('combinedDisplay').innerHTML = `<div class="card"><div class="card-body"><div class="ai-loading"><div class="spinner"></div><span>Generating Combined Intelligence Report...</span></div></div></div>`;
+  document.getElementById('combinedDisplay').innerHTML = `<div class="card"><div class="card-body"><div class="ai-loading"><div class="spinner"></div><span>Generating Overall Analysis...</span></div></div></div>`;
 
   try {
-    const gpSummary = gp ? `GARETH'S GAME PLAN (${gp.date}): Bias: ${gp.macro_bias}. ${gp.summary} Setups: ${(gp.specific_setups||[]).map(s=>`${s.ticker} ${s.direction} @ ${s.entry}`).join(', ')}` : 'Not available today';
+    const gpSummary = gp ? `GAME PLAN (${gp.date}): Bias: ${gp.macro_bias}. ${gp.summary} Setups: ${(gp.specific_setups||[]).map(s=>`${s.ticker} ${s.direction} @ ${s.entry}`).join(', ')}` : 'Not available today';
     const ttcSummary = ttc ? `TRADING THE CLOSE (${ttc.date}): Bias: ${ttc.macro_bias}. ${ttc.summary} Setups: ${(ttc.specific_setups||[]).map(s=>`${s.ticker} ${s.direction} @ ${s.entry}`).join(', ')}` : 'Not available today';
+    const addlSummary = addl ? `ADDITIONAL INFO (${addl.label}): ${addl.summary} Key tickers: ${(addl.key_tickers||[]).map(t=>`${t.ticker} ${t.direction}`).join(', ')}` : '';
 
-    const prompt = `Compare these two show summaries and return JSON only:
+    const prompt = `Analyze these trading inputs and return JSON only:
 {
   "overall_consensus": "bearish|neutral|bullish|conflicted",
   "consensus_strength": "strong|moderate|weak",
   "consensus_note": "1-2 sentence overall takeaway",
   "agreements": [{"ticker":"","both_say":"","conviction":"high|medium","note":""}],
-  "conflicts": [{"ticker":"","gareth_says":"","ttc_says":"","recommendation":"follow_gareth|follow_ttc|avoid|wait","reason":""}],
-  "ttc_only_setups": [{"ticker":"","direction":"","note":"","worth_watching":true}],
-  "gareth_only_setups": [{"ticker":"","direction":"","note":"","worth_watching":true}],
+  "conflicts": [{"ticker":"","source1_says":"","source2_says":"","recommendation":"follow_gameplan|follow_ttc|avoid|wait","reason":""}],
   "top_3_highest_conviction": [{"ticker":"","why":"","action":""}],
   "tickers_to_avoid": [{"ticker":"","reason":""}]
 }
 
 ${gpSummary}
+${ttcSummary}
+${addlSummary}`;
 
-${ttcSummary}`;
-
-    const raw = await callClaude(prompt, 'You are a trading analysis assistant. Compare two analysts and identify agreement, conflict, and combined signals. Return only valid JSON.');
+    const raw = await callClaude(prompt, 'You are a trading analysis assistant. Synthesize multiple market inputs, identify agreement and conflict, and surface the highest-conviction setups. Return only valid JSON.');
     let data;
     try { data = JSON.parse(raw.replace(/```json|```/g,'').trim()); }
     catch(e) { data = null; }
 
+    saveDailyLog(data, gp, ttc, addl);
     renderCombined(data, gp, ttc);
+    renderDailyLog();
   } catch(e) {
     document.getElementById('combinedDisplay').innerHTML = `<div class="card"><div class="card-body"><div style="color:var(--red);font-family:var(--mono);font-size:12px;">Error generating analysis. Try again.</div></div></div>`;
   }
@@ -2455,8 +2662,8 @@ function renderCombined(data, gp, ttc) {
     </div>`).join('');
 
   const conflictsHtml = (data.conflicts||[]).map(c=>{
-    const recColor = c.recommendation==='follow_gareth'?'var(--accent)':c.recommendation==='follow_ttc'?'var(--orange)':c.recommendation==='avoid'?'var(--red)':'var(--yellow)';
-    const recLabel = c.recommendation==='follow_gareth'?'Follow Gareth':c.recommendation==='follow_ttc'?'Follow TTC':c.recommendation==='avoid'?'Avoid':'Wait';
+    const recColor = c.recommendation==='follow_gameplan'?'var(--accent)':c.recommendation==='follow_ttc'?'var(--orange)':c.recommendation==='avoid'?'var(--red)':'var(--yellow)';
+    const recLabel = c.recommendation==='follow_gameplan'?'Follow Game Plan':c.recommendation==='follow_ttc'?'Follow TTC':c.recommendation==='avoid'?'Avoid':'Wait';
     return `<div style="padding:12px;background:rgba(255,107,53,0.05);border:1px solid rgba(255,107,53,0.2);border-radius:6px;margin-bottom:8px">
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
         <span style="font-family:var(--display);font-size:22px;color:var(--orange)">${c.ticker}</span>
@@ -2465,12 +2672,12 @@ function renderCombined(data, gp, ttc) {
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
         <div style="padding:8px;background:rgba(0,212,255,0.05);border:1px solid rgba(0,212,255,0.2);border-radius:4px">
-          <div style="font-family:var(--mono);font-size:9px;color:var(--accent);margin-bottom:3px">GARETH</div>
-          <div style="font-size:12px;color:var(--text2)">${c.gareth_says}</div>
+          <div style="font-family:var(--mono);font-size:9px;color:var(--accent);margin-bottom:3px">GAME PLAN</div>
+          <div style="font-size:12px;color:var(--text2)">${c.source1_says||c.gareth_says||''}</div>
         </div>
         <div style="padding:8px;background:rgba(255,107,53,0.05);border:1px solid rgba(255,107,53,0.2);border-radius:4px">
           <div style="font-family:var(--mono);font-size:9px;color:var(--orange);margin-bottom:3px">TRADING THE CLOSE</div>
-          <div style="font-size:12px;color:var(--text2)">${c.ttc_says}</div>
+          <div style="font-size:12px;color:var(--text2)">${c.source2_says||c.ttc_says||''}</div>
         </div>
       </div>
       <div style="font-size:11px;color:var(--text3)">${c.reason}</div>
@@ -2536,7 +2743,7 @@ function renderCombined(data, gp, ttc) {
 function renderScorecardSection() {
   const rows = state.scorecard.length ? state.scorecard.map(s => {
     const outcomeColor = s.outcome==='correct'?'var(--green)':s.outcome==='incorrect'?'var(--red)':'var(--yellow)';
-    const whoRight = s.who_correct==='gareth'?`<span style="color:var(--accent);font-family:var(--mono);font-size:10px">GARETH ✓</span>`:s.who_correct==='ttc'?`<span style="color:var(--orange);font-family:var(--mono);font-size:10px">TTC ✓</span>`:s.who_correct==='both'?`<span style="color:var(--green);font-family:var(--mono);font-size:10px">BOTH ✓</span>`:s.who_correct==='neither'?`<span style="color:var(--red);font-family:var(--mono);font-size:10px">NEITHER ✗</span>`:'<span style="color:var(--text3);font-size:10px">TBD</span>';
+    const whoRight = s.who_correct==='gareth'?`<span style="color:var(--accent);font-family:var(--mono);font-size:10px">GAME PLAN ✓</span>`:s.who_correct==='ttc'?`<span style="color:var(--orange);font-family:var(--mono);font-size:10px">TTC ✓</span>`:s.who_correct==='both'?`<span style="color:var(--green);font-family:var(--mono);font-size:10px">BOTH ✓</span>`:s.who_correct==='neither'?`<span style="color:var(--red);font-family:var(--mono);font-size:10px">NEITHER ✗</span>`:'<span style="color:var(--text3);font-size:10px">TBD</span>';
     return `<tr>
       <td style="font-family:var(--display);font-size:18px">${s.ticker}</td>
       <td style="font-family:var(--mono);font-size:10px;color:var(--text2)">${formatDate(s.date)}</td>
@@ -2561,7 +2768,7 @@ function renderScorecardSection() {
     <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;padding:16px;border-bottom:1px solid var(--border)">
       <div style="text-align:center">
         <div style="font-family:var(--display);font-size:36px;color:var(--accent)">${total?Math.round(garethCorrect/total*100)+'%':'—'}</div>
-        <div style="font-family:var(--mono);font-size:10px;color:var(--text3);text-transform:uppercase">Gareth Accuracy</div>
+        <div style="font-family:var(--mono);font-size:10px;color:var(--text3);text-transform:uppercase">Game Plan Accuracy</div>
         <div style="font-family:var(--mono);font-size:10px;color:var(--text2)">${garethCorrect}/${total} calls</div>
       </div>
       <div style="text-align:center;border-left:1px solid var(--border);border-right:1px solid var(--border)">
@@ -2580,7 +2787,7 @@ function renderScorecardSection() {
           <tr style="background:var(--bg3)">
             <th style="font-family:var(--mono);font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--text3);padding:8px 12px;text-align:left">Ticker</th>
             <th style="font-family:var(--mono);font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--text3);padding:8px 12px;text-align:left">Date</th>
-            <th style="font-family:var(--mono);font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--accent);padding:8px 12px;text-align:left">Gareth's Call</th>
+            <th style="font-family:var(--mono);font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--accent);padding:8px 12px;text-align:left">Game Plan Call</th>
             <th style="font-family:var(--mono);font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--orange);padding:8px 12px;text-align:left">TTC Call</th>
             <th style="font-family:var(--mono);font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--text3);padding:8px 12px;text-align:left">Outcome</th>
             <th style="font-family:var(--mono);font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--text3);padding:8px 12px;text-align:left">Who Was Right</th>
@@ -2607,8 +2814,8 @@ function initScorecardForm() {
     </div>
     <div class="form-row">
       <div class="form-group">
-        <label class="form-label">Gareth's Call</label>
-        <input type="text" class="form-input" id="scGareth" placeholder="e.g. Long above $72K">
+        <label class="form-label">Game Plan Call</label>
+        <input type="text" class="form-input" id="scGareth" placeholder="e.g. Long above $72K — (Game Plan call)">
       </div>
       <div class="form-group">
         <label class="form-label">TTC Call</label>
@@ -2624,7 +2831,7 @@ function initScorecardForm() {
         <label class="form-label">Who Was Right?</label>
         <select class="form-select" id="scWho">
           <option value="tbd">TBD — Still Playing Out</option>
-          <option value="gareth">Gareth Was Right</option>
+          <option value="gareth">Game Plan Was Right</option>
           <option value="ttc">TTC Was Right</option>
           <option value="both">Both Were Right</option>
           <option value="neither">Neither Was Right</option>
@@ -2779,7 +2986,10 @@ const DEFAULT_METHODOLOGY = {
     { rule: 'Value Trap Warning Signs', detail: 'Looks cheap but keeps getting cheaper. Signs: fundamental deterioration ongoing, 30-year support broken on high volume, guidance cuts, secular headwinds (e.g. store brand competition). WAIT for 2 quarters of stabilization before considering.' },
     { rule: 'Trendline Validity', detail: 'A trendline requires minimum 3 touch points to be considered valid. More touches = stronger level. Multi-decade trendlines (10yr, 30yr, 40yr) carry enormous weight when tested.' },
     { rule: 'Workflow: Weekly → Daily → Hourly', detail: 'Step 1: Weekly chart — big picture supportive? Step 2: Daily chart — pattern, Fib, RSI, measured move. Step 3: 1hr chart — entry timing refinement. Never skip the weekly context.' },
-    { rule: 'BTC Key Level — Gareth (Original Call)', detail: 'Gareth first identified $37-38K as the BTC downside target if the macro bear flag plays out — PRIOR to Drew calling similar levels. Sub-$40K target is Gareth\'s original call. Needs daily close above $72-73K to invalidate bear case.' },
+    { rule: 'Candlestick Technical Analysis', detail: 'Uses price action, visualized through High, Low, Open, and Close (HLOC) data, to predict market moves. Patterns like Hammers (reversal) or Dojis (indecision) reveal buyer/seller sentiment over time, identifying potential trend changes or continuations. Green candles indicate price increases, while red indicate decreases.' },
+    { rule: 'Candlestick Key Components', detail: 'Body (Real Body): Range between opening and closing prices — long body indicates strong buying/selling pressure. Wicks (Shadows): Thin lines above/below the body representing the high and low of the period. Color: Green (or white) = higher close (bullish); Red (or black) = lower close (bearish).' },
+    { rule: 'Essential Candlestick Patterns', detail: 'Doji: Opening and closing prices nearly identical — market indecision. Hammer: Small body with long lower wick — potential bullish reversal after a downtrend. Shooting Star: Small body with long upper wick — potential bearish reversal. Engulfing Patterns: Large candle completely engulfs the previous candle body — strong reversal signal. Morning Star: Three-candle pattern signaling the end of a downtrend.' },
+    { rule: 'How to Use Candlestick Patterns', detail: '(1) Identify Trend: Determine if the market is trending up or down before interpreting the candle. (2) Look for Context: Use patterns in conjunction with support/resistance levels or indicators like moving averages. (3) Confirm the Signal: Do not rely on a single candle — wait for the next few candles to confirm the reversal or continuation.' },
   ],
   screenerFilters: [
     { filter: 'Exchange', value: 'NYSE or NASDAQ only', note: 'No OTC stocks — ever' },
@@ -2871,8 +3081,8 @@ function renderCustomNotes() {
     el.innerHTML = '<div style="color:var(--text3);font-size:12px;font-family:var(--mono)">No custom notes yet — click + Add Note above.</div>';
     return;
   }
-  const catColors = { observation:'var(--accent)', rule:'var(--green)', mistake:'var(--red)', gareth:'var(--yellow)', drew:'var(--orange)' };
-  const catLabels = { observation:'OBSERVATION', rule:'NEW RULE', mistake:'AVOID', gareth:'GARETH', drew:'DREW' };
+  const catColors = { observation:'var(--accent)', rule:'var(--green)', mistake:'var(--red)', gameplan:'var(--yellow)', ttc:'var(--orange)' };
+  const catLabels = { observation:'OBSERVATION', rule:'NEW RULE', mistake:'AVOID', gameplan:'GAME PLAN', ttc:'TTC LESSON' };
   el.innerHTML = notes.map(n => `
     <div style="padding:10px 12px;border:1px solid var(--border);border-radius:6px;margin-bottom:8px;background:var(--bg3)">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
@@ -2939,7 +3149,7 @@ function copyConversationStarter() {
     .map(w => `  • ${w.ticker} | Status: ${w.status} | Entry: ${w.entry} | Stop: ${w.stop} | Target: ${w.target} | Prob: ${w.prob}% | ${w.notes||''}`).join('\n');
 
   const starter = `=== G-POP TRADE — SESSION CONTEXT ===
-Please read this fully before analyzing any charts. This is my personal trading system based on Gareth Soloway's methodology from VerifiedInvesting.com.
+Please read this fully before analyzing any charts. This is my personal trading system.
 
 --- CORE RULES ---
 ${m.coreRules.map(r => `• ${r.rule}: ${r.detail}`).join('\n')}
@@ -3059,8 +3269,9 @@ function loadSampleData() {
 
   // WATCHLIST
   state.watchlist = [
+    // ── STOCKS ──
     {
-      id: 1, ticker: 'IFF', status: 'forming',
+      id: 1, ticker: 'IFF', assetType: 'stock', status: 'forming',
       prob: 70, entry: '$65-69', stop: '$63', target: '$75-78',
       pattern: '40-year trendline support, daily RSI bouncing off 30',
       catalyst: '2026-03-13',
@@ -3068,39 +3279,39 @@ function loadSampleData() {
       checks: 4, date: '2026-03-11'
     },
     {
-      id: 2, ticker: 'MKC', status: 'watching',
+      id: 2, ticker: 'MKC', assetType: 'stock', status: 'watching',
       prob: 65, entry: '$58-60', stop: '$57', target: '$65-66',
       pattern: 'Multi-year $59-60 support zone tested multiple times since 2019',
       catalyst: '',
-      notes: 'McCormick caught in CPB sector contagion. Stronger moat than CPB — spices/flavorings harder to replicate. Below average weekly volume. Need 2 confirmed closes above $61.',
+      notes: 'McCormick caught in CPB sector contagion. Stronger moat — spices/flavorings harder to replicate. Below average weekly volume. Need 2 confirmed closes above $61.',
       checks: 3, date: '2026-03-11'
     },
     {
-      id: 3, ticker: 'BNTX', status: 'watching',
+      id: 3, ticker: 'BNTX', assetType: 'stock', status: 'watching',
       prob: 65, entry: '$82-86', stop: '$79', target: '$97-100',
       pattern: 'Historic oversold RSI (23), capitulation volume 10x average, $82-85 support zone',
       catalyst: '',
-      notes: 'Founder departure (Ugur Sahin + Ozlem Tureci leaving for startup) — emotional overreaction not business collapse. Evercore ISI calls it a buying opportunity. Business and pipeline intact. Watch for stabilization + RSI fast crossing above slow.',
+      notes: 'Founder departure — emotional overreaction not business collapse. Evercore ISI calls it a buying opportunity. Business and pipeline intact. Watch for stabilization + RSI fast crossing above slow.',
       checks: 3, date: '2026-03-10'
     },
     {
-      id: 4, ticker: 'DB', status: 'watching',
+      id: 4, ticker: 'DB', assetType: 'stock', status: 'watching',
       prob: 60, entry: '$25.25', stop: '$22', target: '$29-31',
-      pattern: 'Gareth specific swing level — daily ascending trendline broken',
+      pattern: 'Daily ascending trendline broken, swing level at $25.25',
       catalyst: '',
-      notes: 'Private credit exposure $30B. JPMorgan marking down loans. Gareth day trade at $27.85 gap fill, swing trade at $25.25. Start 25% position per his method. HIGH RISK given macro environment.',
+      notes: 'Private credit exposure $30B. JPMorgan marking down loans. Day trade at $27.85 gap fill, swing trade at $25.25. Start 25% position. HIGH RISK given macro environment.',
       checks: 2, date: '2026-03-12'
     },
     {
-      id: 5, ticker: 'CNC', status: 'watching',
+      id: 5, ticker: 'CNC', assetType: 'stock', status: 'watching',
       prob: 45, entry: 'Wait for base', stop: 'Below $34', target: '$40-42',
       pattern: 'Oversold at prior support ~$36 — but earnings disaster',
       catalyst: '2026-04-06',
-      notes: 'WAIT for April 6 CMS rate decision. ACA enrollment collapsing 5.5M→3.5M. Medicare Advantage still losing money. CEO language cautious. Not a trade until catalyst resolves favorably.',
+      notes: 'WAIT for April 6 CMS rate decision. ACA enrollment collapsing 5.5M→3.5M. Medicare Advantage still losing money. Not a trade until catalyst resolves favorably.',
       checks: 1, date: '2026-03-10'
     },
     {
-      id: 6, ticker: 'GFS', status: 'watching',
+      id: 6, ticker: 'GFS', assetType: 'stock', status: 'watching',
       prob: 58, entry: '$39-42', stop: '$38.50', target: '$47-48',
       pattern: 'Orange ascending trendline + $41-42 horizontal confluence',
       catalyst: '2026-03-17',
@@ -3108,28 +3319,53 @@ function loadSampleData() {
       checks: 2, date: '2026-03-12'
     },
     {
-      id: 7, ticker: 'CPB', status: 'pass',
+      id: 7, ticker: 'CPB', assetType: 'stock', status: 'pass',
       prob: 30, entry: '—', stop: '—', target: '$20-21',
       pattern: '30-year support BROKEN — classic value trap',
       catalyst: '',
-      notes: 'AVOID. 30-year range support broken on 3x volume. ACA snack sales structural decline. Store brand competition secular headwind. Down 60% and still deteriorating fundamentals. Wait for 2 quarters of stabilization.',
+      notes: 'AVOID. 30-year range support broken on 3x volume. Snack sales structural decline. Store brand competition secular headwind. Down 60% and still deteriorating. Wait for 2 quarters of stabilization.',
       checks: 0, date: '2026-03-11'
     },
     {
-      id: 8, ticker: 'ARES', status: 'pass',
+      id: 8, ticker: 'ARES', assetType: 'stock', status: 'pass',
       prob: 20, entry: '—', stop: '—', target: '—',
       pattern: 'Private credit epicenter — business model threatened',
       catalyst: '',
-      notes: 'DO NOT TRADE LONG. Down 42% YTD. This IS the private credit black swan Gareth warned about. JPMorgan marking down loans directly hits Ares core business. 2x volume institutional selling. Avoid until crisis resolves.',
+      notes: 'DO NOT TRADE LONG. Down 42% YTD. Private credit black swan — JPMorgan marking down loans directly hits core business. 2x volume institutional selling. Avoid until crisis resolves.',
       checks: 0, date: '2026-03-12'
     },
     {
-      id: 9, ticker: 'S', status: 'watching',
+      id: 9, ticker: 'S', assetType: 'stock', status: 'watching',
       prob: 63, entry: '$14.50-15.00', stop: '$12.25', target: '$19.50-20.00',
-      pattern: '3-year blue box support floor ($13.50-15.00), descending yellow trendline resistance overhead, fresh daily RsiLE +2 cross',
+      pattern: '3-year blue box support floor ($13.50-15.00), descending trendline resistance overhead, fresh daily RsiLE +2 cross',
       catalyst: '',
-      notes: 'Sitting at absolute bottom of 3-year consolidation range on elevated weekly volume. Business solid — $1B ARR growing 22% YoY, hit operating profitability. Q1 2027 EPS guidance miss ($0.01-0.02 vs $0.05 expected) caused the recent drop — expectations reset not business collapse. Mar 13 UPDATE: Gareth called $12.40 pivot low as day trade bounce level — if it flushes there first it could set up a better swing entry. BELOW 70% threshold — need 2 daily closes above descending yellow trendline (~$14.50-15.00) to confirm swing entry. Check Monday weekly close.',
+      notes: 'Sitting at absolute bottom of 3-year consolidation range on elevated weekly volume. Business solid — $1B ARR growing 22% YoY, hit operating profitability. BELOW 70% threshold — need 2 daily closes above descending trendline (~$14.50-15.00) to confirm swing entry.',
       checks: 3, date: '2026-03-13'
+    },
+    // ── CRYPTO ──
+    {
+      id: 10, ticker: 'BTC', assetType: 'crypto', status: 'watching',
+      prob: 72, entry: '$72,000-74,000', stop: 'Below trendline retest ~$68K', target: '$80,000-85,000',
+      pattern: 'Bullish trendline breakout (refined), Inside bar accumulation, $74K key resistance',
+      catalyst: '',
+      notes: 'Bullish trendline breakout likely triggered. Inside bar = quiet bull accumulation. Need confirmed close above $74K to open $80-85K target. Sentiment fully inverted from $127K highs — classic contrarian setup.',
+      checks: 4, date: '2026-03-13'
+    },
+    {
+      id: 11, ticker: 'ETH', assetType: 'crypto', status: 'watching',
+      prob: 65, entry: '$2,100-2,200', stop: '$1,950', target: '$2,700-2,800',
+      pattern: 'Multi-month ascending channel, testing lower rail support, RSI near 35 (oversold territory)',
+      catalyst: '',
+      notes: 'Ethereum holding the ascending channel bottom rail on elevated volume. RSI approaching oversold — not quite a buy signal yet. Watch for 2 confirmed daily closes back inside the channel mid-range ($2,400+) to confirm recovery. BTC needs to lead first.',
+      checks: 3, date: '2026-03-13'
+    },
+    {
+      id: 12, ticker: 'SOL', assetType: 'crypto', status: 'forming',
+      prob: 68, entry: '$128-135', stop: '$118', target: '$155-165',
+      pattern: 'Bullish flag formation after $185 → $125 correction, coiling at horizontal support',
+      catalyst: '',
+      notes: 'SOL corrected 32% from recent highs into a tight consolidation band at $125-135 horizontal support. Flag pole measured move targets $155-165 on breakout. Needs BTC above $74K to give altcoins room to rally. Volume declining during flag — healthy compression. Below 70% threshold — watch for catalyst.',
+      checks: 3, date: '2026-03-12'
     }
   ];
 
@@ -3152,6 +3388,8 @@ function loadSampleData() {
     { id: 113, ticker: 'ARES', date: '2026-03-12', timeframe: 'Daily', patterns: 'Private credit epicenter, 49.9% below 52-week high, 2x volume selling', prob: 20, verdict: 'avoid', notes: 'DO NOT TRADE. Ground zero of Gareth black swan event. JPMorgan marking down private credit loans. Business model directly threatened. Down 42% YTD and accelerating.' },
     { id: 114, ticker: 'CPB', date: '2026-03-11', timeframe: 'Monthly', patterns: '30-YEAR SUPPORT BROKEN, Generational breakdown, 3x volume', prob: 25, verdict: 'avoid', notes: 'Classic value trap. 30-year range $35-85 violated. Snacks structural decline vs PepsiCo/store brands. Guidance cut. EPS $2.15-2.25. Need 2 quarters stabilization minimum.' },
     { id: 115, ticker: 'S', date: '2026-03-13', timeframe: 'Weekly', patterns: '3-year blue box support floor, Bottom rail test at $13.50, Elevated volume 38.75M', prob: 63, verdict: 'watchlist', notes: 'Weekly: 3-yr consolidation box floor being tested. Stock down 90%+ from $130 highs. Not broken fundamentally — $1B ARR growing 22%, first operating profit. RsiSE fired at top in 2021. Weekly RSI fast 41.86 crossing above slow 38.38.' },
+    { id: 119, ticker: 'ETH', date: '2026-03-13', timeframe: 'Weekly', patterns: 'Ascending channel lower rail test, RSI 35 oversold approach, High volume support test', prob: 65, verdict: 'watchlist', notes: 'ETH testing the lower rail of a multi-month ascending channel on elevated volume. RSI approaching oversold territory near 35. Key level: need 2 confirmed weekly closes above $2,400 channel mid-range to confirm recovery. BTC correlation high — watch BTC $74K for direction.' },
+    { id: 120, ticker: 'SOL', date: '2026-03-12', timeframe: 'Daily', patterns: 'Bull flag after $185→$125 decline, Coiling at $125-135 horizontal support, Volume declining (healthy)', prob: 68, verdict: 'watchlist', notes: 'Classic bull flag setup — corrected 32% into a tight consolidation. Volume declining during flag phase is healthy compression. Measured move target $155-165 on confirmed breakout above $138. Needs BTC above $74K for altcoin season conditions. Below 70% threshold — wait for BTC catalyst.' },
     { id: 116, ticker: 'S', date: '2026-03-13', timeframe: 'Daily', patterns: 'Descending yellow trendline resistance, Blue box bottom rail, Fresh RsiLE +2 cross, Prior low $12.50', prob: 63, verdict: 'watchlist', notes: 'Daily: Descended yellow trendline from mid-2025 highs acting as resistance directly overhead. Price broke below box briefly to $12.50 then bounced back inside. RSI fast 51.90 crossing above slow 50.21 — fresh RsiLE +2 signal. NEED 2 daily closes above yellow trendline (~$14.50-15) to confirm. Entry $14.50-15, Stop $12.25, T1 $19.50-20, T2 $27.50-28.' }
   ];
 
@@ -3162,13 +3400,21 @@ async function init() {
   const today = new Date().toLocaleDateString('en-US', { weekday:'short', month:'short', day:'numeric' });
   document.getElementById('headerDate').textContent = today;
 
+  // Set default dates on inline Intelligence forms
+  const todayISO = new Date().toISOString().split('T')[0];
+  ['gpDate','ttcDate'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el && !el.value) el.value = todayISO;
+  });
+
   await loadState();
   loadSampleData();
 
   if (state.gamePlans.length) renderGamePlan(state.gamePlans[0]);
   if (state.ttcShows.length) renderTTC(state.ttcShows[0]);
+  if (state.additionalInfo.length) renderAdditional(state.additionalInfo[0]);
   renderWatchlist();
-  renderChartLog();
+  renderDailyLog();
   renderTradeJournal();
   renderMethodology();
   updateQuickTickers('');
